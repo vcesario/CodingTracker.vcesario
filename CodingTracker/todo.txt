@@ -1,4 +1,4 @@
-- [] Read Separation of Concerns (https://thecsharpacademy.com/article/30005/separation-of-concerns-csharp)
+- [x] Read Separation of Concerns (https://thecsharpacademy.com/article/30005/separation-of-concerns-csharp)
 - [] Finish OOP Course (https://thecsharpacademy.com/course/1/article/1/500000/false)
 - [] Begin!
     - [] Configuration files article (https://learn.microsoft.com/en-us/troubleshoot/developer/visualstudio/csharp/language-compilers/store-custom-information-config-file)
