@@ -1,0 +1,4 @@
+{
+    "dotnet.defaultSolution": "CodingTracker.sln",
+    "csharp.debug.console": "externalTerminal"
+}
