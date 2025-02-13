@@ -1,11 +1,17 @@
 - [x] Read Separation of Concerns (https://thecsharpacademy.com/article/30005/separation-of-concerns-csharp)
-- [] Finish OOP Course (https://thecsharpacademy.com/course/1/article/1/500000/false)
-- [] Begin!
-    - [] Configuration files article (https://learn.microsoft.com/en-us/troubleshoot/developer/visualstudio/csharp/language-compilers/store-custom-information-config-file)
-    - [] Spectre Console (https://spectreconsole.net/)
-    - [] Dapper (https://www.learndapper.com/)
-    - [] DateTime in C# (https://medium.com/@Has_San/datetime-in-c-1aef47db4feb)
+- [x] Finish OOP Course (https://thecsharpacademy.com/course/1/article/1/500000/false)
+- [] Configuration
+- [] Model
+- [] Database creation
+- [] CRUD operations
+- [] Table Visualization
+- [] Data validation
 - [] Write Readme
+
+* Configuration files article (https://learn.microsoft.com/en-us/troubleshoot/developer/visualstudio/csharp/language-compilers/store-custom-information-config-file)
+* Spectre Console (https://spectreconsole.net/)
+* Dapper (https://www.learndapper.com/)
+* DateTime in C# (https://medium.com/@Has_San/datetime-in-c-1aef47db4feb)
 
 ======================
 
