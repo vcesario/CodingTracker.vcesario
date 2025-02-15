@@ -1,17 +1,18 @@
 - [x] Read Separation of Concerns (https://thecsharpacademy.com/article/30005/separation-of-concerns-csharp)
 - [x] Finish OOP Course (https://thecsharpacademy.com/course/1/article/1/500000/false)
-- [] Configuration
-- [] Model
-- [] Database creation
-- [] CRUD operations
+- [x] Configuration
+- [x] Setup DataService (Database handler)
+- Implement Menu Options:
+    - [] ExitApplication
+    - [] LogSessionManually,
+    - [] FillWithRandomData,
+    - [] StartNewSession,
+    - [] ManageSessions,
+    - [] ViewReport,
+    - [] ViewGoals,
 - [] Table Visualization
 - [] Data validation
 - [] Write Readme
-
-* Configuration files article (https://learn.microsoft.com/en-us/troubleshoot/developer/visualstudio/csharp/language-compilers/store-custom-information-config-file)
-* Spectre Console (https://spectreconsole.net/)
-* Dapper (https://www.learndapper.com/)
-* DateTime in C# (https://medium.com/@Has_San/datetime-in-c-1aef47db4feb)
 
 ======================
 
@@ -39,3 +40,8 @@ Challenges
 - Let the users filter their coding records per period (weeks, days, years) and/or order ascending or descending.
 - Create reports where the users can see their total and average coding session per period.
 - Create the ability to set coding goals and show how far the users are from reaching their goal, along with how many hours a day they would have to code to reach their goal. You can do it via SQL queries or with C#.
+
+* Configuration files article (https://learn.microsoft.com/en-us/troubleshoot/developer/visualstudio/csharp/language-compilers/store-custom-information-config-file)
+* Spectre Console (https://spectreconsole.net/)
+* Dapper (https://www.learndapper.com/)
+* DateTime in C# (https://medium.com/@Has_San/datetime-in-c-1aef47db4feb)

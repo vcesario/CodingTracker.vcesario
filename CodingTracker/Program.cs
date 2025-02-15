@@ -1,11 +1,7 @@
-﻿using System.Configuration;
-using System.Data.SQLite;
-using vcesario.CodingTracker;
+﻿using vcesario.CodingTracker;
 
-string? connectionString = ConfigurationManager.AppSettings.Get("connectionString");
-using (var connection = new SQLiteConnection(connectionString))
-{
-    connection.Open();
+DataService.Initialize();
 
-    MainApplication.Run();
-}
+MainApplication.Run();
+
+DataService.Shutdown();
