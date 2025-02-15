@@ -1,7 +1,11 @@
 ﻿using System.Configuration;
-using System.Collections.Specialized;
+using System.Data.SQLite;
+using vcesario.CodingTracker;
 
-string value = ConfigurationManager.AppSettings.Get("DataPath");
-Console.WriteLine($"MySetting: {value}");
+string? connectionString = ConfigurationManager.AppSettings.Get("connectionString");
+using (var connection = new SQLiteConnection(connectionString))
+{
+    connection.Open();
 
-Console.ReadLine();
+    MainApplication.Run();
+}
