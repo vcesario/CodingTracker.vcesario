@@ -2,8 +2,9 @@
 - [x] Finish OOP Course (https://thecsharpacademy.com/course/1/article/1/500000/false)
 - [x] Configuration
 - [x] Setup DataService (Database handler)
+- [x] Setup Menu Options
 - Implement Menu Options:
-    - [] ExitApplication
+    - [x] ExitApplication
     - [] LogSessionManually,
     - [] FillWithRandomData,
     - [] StartNewSession,
