@@ -5,6 +5,10 @@ namespace vcesario.CodingTracker;
 public static class ApplicationTexts
 {
     public const string MAINMENU_PROMPT = "What do you want to do?";
+    public const string LOGSESSIONPROMPT_STARTDATETIME = "Enter the start date and time";
+    public const string LOGSESSIONPROMPT_ENDDATETIME = "Enter the end date and time";
+    public const string USERINPUT_DATETIMEHELPER = "yyyy-MM-dd hh:mm:ss";
+    public const string USERINPUT_DATETIMEERROR = "Couldn't parse DateTime. Use providede template.";
     private const string TEXT_UNDEFINED = "Text undefined";
 
     public static string ConvertMainMenuOption(MainMenuOption option)
