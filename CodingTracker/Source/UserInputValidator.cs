@@ -4,12 +4,7 @@ namespace vcesario.CodingTracker;
 
 public class UserInputValidator
 {
-    public UserInputValidator()
-    {
-
-    }
-
-    public ValidationResult ValidateDateTime(string input)
+    public ValidationResult ValidateDateTimeOrReturn(string input)
     {
         if (input.StartsWith("ForceError"))
         {

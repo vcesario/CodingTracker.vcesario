@@ -5,14 +5,16 @@
 - [x] Setup Menu Options
 - Implement Menu Options:
     - [x] ExitApplication
-    - [] LogSessionManually,
+    - [x] LogSessionManually,
     - [] FillWithRandomData,
     - [] StartNewSession,
     - [] ManageSessions,
     - [] ViewReport,
     - [] ViewGoals,
 - [] Table Visualization
-- [] Data validation
+- Data validation
+    - [] Validate input DateTime
+    - [] Validate DateTime Overlap on Insert
 - [] Write Readme
 
 ======================
