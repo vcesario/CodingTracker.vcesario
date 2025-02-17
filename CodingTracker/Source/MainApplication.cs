@@ -1,4 +1,5 @@
 using System.Data.SQLite;
+using System.Diagnostics;
 using Spectre.Console;
 
 namespace vcesario.CodingTracker;
@@ -22,6 +23,9 @@ public static class MainApplication
 
             switch (actionChoice)
             {
+                case MainMenuOption.StartNewSession:
+                    OpenNewSessionScreen();
+                    break;
                 case MainMenuOption.LogSessionManually:
                     OpenLogSessionScreen();
                     break;
@@ -34,6 +38,59 @@ public static class MainApplication
             }
         }
         while (!choseExitApp);
+    }
+
+    private static void OpenNewSessionScreen()
+    {
+        Stopwatch stopwatch = new();
+        stopwatch.Start();
+        DateTime now = DateTime.Now;
+
+        ConsoleKeyInfo pressedKeyInfo = default;
+        Task userKeyReader = Task.Run(ReadUserKey);
+
+        while (!userKeyReader.IsCompleted)
+        {
+            Console.Clear();
+            Console.WriteLine();
+            Console.WriteLine($"  Coding session in progress...");
+            Console.WriteLine($"\t{stopwatch.Elapsed:hh\\:mm\\:ss}");
+            Console.WriteLine();
+            AnsiConsole.MarkupLine("  [grey](Press 'Enter' to conclude session.)[/]");
+            AnsiConsole.MarkupLine("  [grey](Press 'Esc' to discard session.)[/]");
+            Console.WriteLine();
+            Thread.Sleep(1000);
+        }
+
+        // to be continued...
+
+        switch (pressedKeyInfo.Key)
+        {
+            case ConsoleKey.Enter:
+                Console.WriteLine("Pressed Enter.");
+                break;
+            case ConsoleKey.Escape:
+                Console.WriteLine("Pressed Esc.");
+                break;
+            default:
+                Console.WriteLine("Unknown...");
+                break;
+        }
+        Console.ReadLine();
+
+        void ReadUserKey()
+        {
+            bool pressedAcceptedKey = false;
+            while (!pressedAcceptedKey)
+            {
+                pressedKeyInfo = Console.ReadKey(true);
+                if (pressedKeyInfo.Key == ConsoleKey.Enter
+                || pressedKeyInfo.Key == ConsoleKey.Escape)
+                {
+                    pressedAcceptedKey = true;
+                }
+            }
+        }
     }
 
     private static void OpenLogSessionScreen()
