@@ -24,4 +24,18 @@ public static class DataService
 
         return connection;
     }
+
+    public static void InsertSession(DateTime start, DateTime end)
+    {
+        using (var connection = DataService.OpenConnection())
+        {
+            SQLiteCommand insertCommand = connection.CreateCommand();
+            insertCommand.CommandText = @"INSERT INTO coding_sessions (start_date_time, end_date_time)
+                                            VALUES (@StartDateTime, @EndDateTime)";
+            insertCommand.Parameters.AddWithValue("@StartDateTime", start);
+            insertCommand.Parameters.AddWithValue("@EndDateTime", end);
+
+            insertCommand.ExecuteNonQuery();
+        }
+    }
 }

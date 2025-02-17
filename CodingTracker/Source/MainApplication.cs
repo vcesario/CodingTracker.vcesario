@@ -27,6 +27,9 @@ public static class MainApplication
                 case MainMenuOption.LogSessionManually:
                     OpenLogSessionScreen();
                     break;
+                case MainMenuOption.FillWithRandomData:
+                    FillWithRandomData();
+                    break;
                 default:
                     choseExitApp = true;
                     break;
@@ -76,23 +79,46 @@ public static class MainApplication
             return;
         }
 
-        // using (var connection = DataService.GetConnection())
-        // {
-        //     // check if session overlaps
-        // }
+        // check if session overlaps
+        // ...
 
-        using (var connection = DataService.OpenConnection())
+        DataService.InsertSession(startDateTime, endDateTime);
+
+        Console.WriteLine(ApplicationTexts.SESSION_CREATED);
+        Console.ReadLine();
+    }
+
+    private static void FillWithRandomData()
+    {
+        Console.Clear();
+
+        Random random = new();
+        DateOnly today = DateOnly.FromDateTime(DateTime.Now);
+
+        for (int i = 1; i <= 100; i++)
         {
-            SQLiteCommand insertCommand = connection.CreateCommand();
-            insertCommand.CommandText = @"INSERT INTO coding_sessions (start_date_time, end_date_time)
-                                            VALUES (@StartDateTime, @EndDateTime)";
-            insertCommand.Parameters.AddWithValue("@StartDateTime", startDateTime);
-            insertCommand.Parameters.AddWithValue("@EndDateTime", endDateTime);
+            TimeSpan sessionDuration = TimeSpan.FromMinutes(random.Next(1, 181));
+            TimeOnly timeRange = TimeOnly.MaxValue.AddMinutes(-sessionDuration.TotalMinutes);
+            TimeOnly randomStartTime = new(
+                random.Next(timeRange.Hour + 1),
+                random.Next(timeRange.Minute + 1),
+                random.Next(timeRange.Second + 1));
 
-            insertCommand.ExecuteNonQuery();
+            DateOnly day = today.AddDays(-i);
+
+            DateTime startDateTime = new(day, randomStartTime);
+            DateTime endDateTime = new(day, randomStartTime.AddMinutes(sessionDuration.TotalMinutes));
+
+            // check if session overlaps
+            // ...
+
+            DataService.InsertSession(startDateTime, endDateTime);
+
+            Console.WriteLine($"{startDateTime}\t{endDateTime}");
         }
 
-        Console.WriteLine("Coding session created.");
+        Console.WriteLine();
+        Console.WriteLine(ApplicationTexts.RANDOMDATA_CREATED);
         Console.ReadLine();
     }
 }

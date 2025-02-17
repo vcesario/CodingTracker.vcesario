@@ -6,7 +6,7 @@
 - Implement Menu Options:
     - [x] ExitApplication
     - [x] LogSessionManually,
-    - [] FillWithRandomData,
+    - [x] FillWithRandomData,
     - [] StartNewSession,
     - [] ManageSessions,
     - [] ViewReport,
