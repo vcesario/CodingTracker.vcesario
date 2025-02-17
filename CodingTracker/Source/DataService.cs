@@ -1,5 +1,6 @@
 using System.Configuration;
 using System.Data.SQLite;
+using Dapper;
 
 public static class DataService
 {
@@ -29,13 +30,14 @@ public static class DataService
     {
         using (var connection = DataService.OpenConnection())
         {
-            SQLiteCommand insertCommand = connection.CreateCommand();
-            insertCommand.CommandText = @"INSERT INTO coding_sessions (start_date_time, end_date_time)
+            string insertStatement = @"INSERT INTO coding_sessions (start_date_time, end_date_time)
                                             VALUES (@StartDateTime, @EndDateTime)";
-            insertCommand.Parameters.AddWithValue("@StartDateTime", start);
-            insertCommand.Parameters.AddWithValue("@EndDateTime", end);
+            var anonymousSession = new {
+                StartDateTime = start.ToString("yyyy-MM-dd hh:mm:ss"),
+                EndDateTime = end.ToString("yyyy-MM-dd hh:mm:ss")
+            };
 
-            insertCommand.ExecuteNonQuery();
+            connection.Execute(insertStatement, anonymousSession);
         }
     }
 }

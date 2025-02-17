@@ -7,6 +7,8 @@
     - [x] ExitApplication
     - [x] LogSessionManually,
     - [x] FillWithRandomData,
+        - [] Create bulk insert
+        - [] Convert Create table to Dapper
     - [] StartNewSession,
     - [] ManageSessions,
     - [] ViewReport,

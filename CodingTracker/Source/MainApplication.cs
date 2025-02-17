@@ -114,7 +114,7 @@ public static class MainApplication
 
             DataService.InsertSession(startDateTime, endDateTime);
 
-            Console.WriteLine($"{startDateTime}\t{endDateTime}");
+            Console.WriteLine($@"  {startDateTime}\t{endDateTime}");
         }
 
         Console.WriteLine();
