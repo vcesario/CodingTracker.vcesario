@@ -7,9 +7,7 @@ public static class MainApplication
 {
     public static void Run()
     {
-        // create database and tables here?
         DataService.Initialize();
-        // ---
 
         bool choseExitApp = false;
         do
@@ -81,8 +79,7 @@ public static class MainApplication
 
         // check if session overlaps
         // ...
-
-        DataService.InsertSession(startDateTime, endDateTime);
+        DataService.InsertSession(session);
 
         Console.WriteLine(ApplicationTexts.SESSION_CREATED);
         Console.ReadLine();
@@ -112,9 +109,10 @@ public static class MainApplication
             // check if session overlaps
             // ...
 
-            DataService.InsertSession(startDateTime, endDateTime);
+            CodingSession session = new(startDateTime, endDateTime);
+            DataService.InsertSession(session);
 
-            Console.WriteLine($@"  {startDateTime}\t{endDateTime}");
+            Console.WriteLine($"  {startDateTime}\t{endDateTime}");
         }
 
         Console.WriteLine();

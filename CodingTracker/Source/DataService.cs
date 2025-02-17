@@ -1,6 +1,7 @@
 using System.Configuration;
 using System.Data.SQLite;
 using Dapper;
+using vcesario.CodingTracker;
 
 public static class DataService
 {
@@ -8,12 +9,11 @@ public static class DataService
     {
         using (var connection = OpenConnection())
         {
-            var createCommand = connection.CreateCommand();
-            createCommand.CommandText = @"CREATE TABLE IF NOT EXISTS coding_sessions(
+            string createStatement = @"CREATE TABLE IF NOT EXISTS coding_sessions(
                                             start_date_time DATE NOT NULL,
                                             end_date_time DATE NOT NULL
                                         )";
-            createCommand.ExecuteNonQuery();
+            connection.Execute(createStatement);
         }
     }
 
@@ -26,15 +26,16 @@ public static class DataService
         return connection;
     }
 
-    public static void InsertSession(DateTime start, DateTime end)
+    public static void InsertSession(CodingSession session)
     {
         using (var connection = DataService.OpenConnection())
         {
             string insertStatement = @"INSERT INTO coding_sessions (start_date_time, end_date_time)
-                                            VALUES (@StartDateTime, @EndDateTime)";
-            var anonymousSession = new {
-                StartDateTime = start.ToString("yyyy-MM-dd hh:mm:ss"),
-                EndDateTime = end.ToString("yyyy-MM-dd hh:mm:ss")
+                                        VALUES (@StartDateTime, @EndDateTime)";
+            var anonymousSession = new
+            {
+                StartDateTime = session.Start.ToString("yyyy-MM-dd hh:mm:ss"),
+                EndDateTime = session.End.ToString("yyyy-MM-dd hh:mm:ss")
             };
 
             connection.Execute(insertStatement, anonymousSession);

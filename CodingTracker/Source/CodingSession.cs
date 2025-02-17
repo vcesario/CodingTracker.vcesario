@@ -2,6 +2,9 @@ namespace vcesario.CodingTracker;
 
 public class CodingSession
 {
+    public DateTime Start => m_Start;
+    public DateTime End => m_End;
+
     private DateTime m_Start;
     private DateTime m_End;
 

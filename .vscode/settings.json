@@ -1,4 +1,5 @@
 {
     "dotnet.defaultSolution": "CodingTracker.sln",
-    "csharp.debug.console": "externalTerminal"
+    "csharp.debug.console": "externalTerminal",
+    "debug.console.closeOnEnd": true
 }
