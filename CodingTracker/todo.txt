@@ -8,7 +8,7 @@
     - [x] LogSessionManually,
     - [x] FillWithRandomData,
         - [x] Convert Create table to Dapper
-    - [] StartNewSession,
+    - [x] StartNewSession,
     - [] ManageSessions,
     - [] ViewReport,
     - [] ViewGoals,

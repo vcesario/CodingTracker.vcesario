@@ -34,8 +34,8 @@ public static class DataService
                                         VALUES (@StartDateTime, @EndDateTime)";
             var anonymousSession = new
             {
-                StartDateTime = session.Start.ToString("yyyy-MM-dd hh:mm:ss"),
-                EndDateTime = session.End.ToString("yyyy-MM-dd hh:mm:ss")
+                StartDateTime = session.Start.ToString("yyyy-MM-dd HH:mm:ss"),
+                EndDateTime = session.End.ToString("yyyy-MM-dd HH:mm:ss")
             };
 
             connection.Execute(insertStatement, anonymousSession);

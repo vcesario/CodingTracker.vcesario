@@ -1,4 +1,3 @@
-using System.Data.SQLite;
 using System.Diagnostics;
 using Spectre.Console;
 
@@ -24,10 +23,10 @@ public static class MainApplication
             switch (actionChoice)
             {
                 case MainMenuOption.StartNewSession:
-                    OpenNewSessionScreen();
+                    TrackSession();
                     break;
                 case MainMenuOption.LogSessionManually:
-                    OpenLogSessionScreen();
+                    EnterManualSession();
                     break;
                 case MainMenuOption.FillWithRandomData:
                     FillWithRandomData();
@@ -40,60 +39,67 @@ public static class MainApplication
         while (!choseExitApp);
     }
 
-    private static void OpenNewSessionScreen()
+    private static void TrackSession()
     {
         Stopwatch stopwatch = new();
+        DateTime startDateTime = DateTime.Now;
+        Task<ConsoleKeyInfo> keyReader = Task.Run(ReadUserKey);
+
         stopwatch.Start();
-        DateTime now = DateTime.Now;
 
-        ConsoleKeyInfo pressedKeyInfo = default;
-        Task userKeyReader = Task.Run(ReadUserKey);
-
-        while (!userKeyReader.IsCompleted)
+        while (!keyReader.IsCompleted)
         {
             Console.Clear();
             Console.WriteLine();
-            Console.WriteLine($"  Coding session in progress...");
+            Console.WriteLine($"  {ApplicationTexts.TRACKSESSION_INPROGRESS}");
             Console.WriteLine($"\t{stopwatch.Elapsed:hh\\:mm\\:ss}");
             Console.WriteLine();
-            AnsiConsole.MarkupLine("  [grey](Press 'Enter' to conclude session.)[/]");
-            AnsiConsole.MarkupLine("  [grey](Press 'Esc' to discard session.)[/]");
+            AnsiConsole.MarkupLine($"  [grey]{ApplicationTexts.TRACKSESSION_CONCLUDEHELPER}[/]");
+            AnsiConsole.MarkupLine($"  [grey]{ApplicationTexts.TRACKSESSION_DISCARDHELPER}[/]");
             Console.WriteLine();
-            Thread.Sleep(1000);
+            Thread.Sleep(500);
         }
 
-        // to be continued...
+        stopwatch.Stop();
 
-        switch (pressedKeyInfo.Key)
+        if (keyReader.Result.Key != ConsoleKey.Enter)
         {
-            case ConsoleKey.Enter:
-                Console.WriteLine("Pressed Enter.");
-                break;
-            case ConsoleKey.Escape:
-                Console.WriteLine("Pressed Esc.");
-                break;
-            default:
-                Console.WriteLine("Unknown...");
-                break;
+            Console.WriteLine(ApplicationTexts.SESSION_DISCARDED);
+            Console.ReadLine();
+            return;
         }
+
+        DateTime endDateTime = DateTime.Now;
+        CodingSession codingSession = new(startDateTime, endDateTime);
+
+        // check if session overlaps
+        // ...
+
+        DataService.InsertSession(codingSession);
+
+        Console.WriteLine($"{ApplicationTexts.SESSION_CREATED}\n  {startDateTime}\t{endDateTime}");
         Console.ReadLine();
 
-        void ReadUserKey()
+        ConsoleKeyInfo ReadUserKey()
         {
+            ConsoleKeyInfo keyInfo = default;
             bool pressedAcceptedKey = false;
+
             while (!pressedAcceptedKey)
             {
-                pressedKeyInfo = Console.ReadKey(true);
-                if (pressedKeyInfo.Key == ConsoleKey.Enter
-                || pressedKeyInfo.Key == ConsoleKey.Escape)
+                keyInfo = Console.ReadKey(true);
+                if (keyInfo.Key == ConsoleKey.Enter
+                || keyInfo.Key == ConsoleKey.Escape)
                 {
                     pressedAcceptedKey = true;
                 }
             }
+
+            return keyInfo;
         }
     }
 
-    private static void OpenLogSessionScreen()
+    private static void EnterManualSession()
     {
         Console.Clear();
 
@@ -169,7 +175,7 @@ public static class MainApplication
             CodingSession session = new(startDateTime, endDateTime);
             DataService.InsertSession(session);
 
-            Console.WriteLine($"  {startDateTime}\t{endDateTime}");
+            Console.WriteLine($"  {startDateTime:yyyy-MM-dd HH:mm:ss}\t{endDateTime:yyyy-MM-dd HH:mm:ss}");
         }
 
         Console.WriteLine();

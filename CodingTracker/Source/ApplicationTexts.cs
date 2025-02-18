@@ -18,7 +18,12 @@ public static class ApplicationTexts
     public const string USERINPUT_DATETIMEHELPER = "yyyy-MM-dd hh:mm:ss";
     public const string USERINPUT_DATETIMEERROR = "Couldn't parse DateTime. Use provided template.";
     public const string SESSION_CREATED = "Coding session created.";
+    public const string SESSION_DISCARDED = "Coding session discarded.";
     public const string RANDOMDATA_CREATED = "Random data created.";
+    public const string TRACKSESSION_INPROGRESS = "Coding session in progress...";
+    public const string TRACKSESSION_CONCLUDEHELPER = "(Press 'Enter' to conclude session.)";
+    public const string TRACKSESSION_DISCARDHELPER = "(Press 'Esc' to discard session.)";
+
     private const string TEXT_UNDEFINED = "Text undefined";
 
     public static string ConvertMainMenuOption(MainMenuOption option)
