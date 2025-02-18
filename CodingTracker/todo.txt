@@ -9,13 +9,19 @@
     - [x] FillWithRandomData,
         - [x] Convert Create table to Dapper
     - [x] StartNewSession,
-    - [] ManageSessions,
+    - ManageSessions,
+        - [] Get Search Filter from User
+        - [] Show all entries based on search filter (no pagination/"see more"!)
+        - [] Edit query option
+        - [] Edit entry option
+        - [] Delete option (sub: ID, ID range, all)
     - [] ViewReport,
     - [] ViewGoals,
 - [] Table Visualization
 - Data validation
     - [] Validate input DateTime
     - [] Validate DateTime Overlap on Insert
+- [] Recover from DB loss while application already open
 - [] Write Readme
 
 ======================
