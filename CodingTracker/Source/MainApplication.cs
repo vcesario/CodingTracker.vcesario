@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Dapper;
 using Spectre.Console;
 
 namespace vcesario.CodingTracker;
@@ -27,6 +28,9 @@ public static class MainApplication
                     break;
                 case MainMenuOption.LogSessionManually:
                     EnterManualSession();
+                    break;
+                case MainMenuOption.ManageSessions:
+                    ManageSessions();
                     break;
                 case MainMenuOption.FillWithRandomData:
                     FillWithRandomData();
@@ -112,7 +116,7 @@ public static class MainApplication
             .Validate(validator.ValidateDateTimeOrReturn)
         );
 
-        if (startTimeInput.Equals("return"))
+        if (startTimeInput.ToLower().Equals("return"))
         {
             return;
         }
@@ -124,7 +128,7 @@ public static class MainApplication
             .Validate(validator.ValidateDateTimeOrReturn)
         );
 
-        if (endTimeInput.Equals("return"))
+        if (endTimeInput.ToLower().Equals("return"))
         {
             return;
         }
@@ -145,6 +149,117 @@ public static class MainApplication
         DataService.InsertSession(session);
 
         Console.WriteLine(ApplicationTexts.SESSION_CREATED);
+        Console.ReadLine();
+    }
+
+    private static void ManageSessions()
+    {
+        Console.Clear();
+
+        Console.WriteLine("Search filter");
+
+        var actionChoice = AnsiConsole.Prompt(
+                    new SelectionPrompt<string>()
+                    .Title("Select result range:")
+                    .AddChoices(["Week", "Month", "Year", "All", "Return"]));
+
+        if (actionChoice.Equals("Return"))
+        {
+            return;
+        }
+
+        Console.WriteLine($"Range selected: {actionChoice}");
+
+        DateTime filterStart = default;
+        DateTime filterEnd = default;
+
+        if (actionChoice.Equals("All"))
+        {
+            filterStart = DateTime.MinValue;
+            filterEnd = DateTime.MaxValue;
+        }
+        else
+        {
+            UserInputValidator validator = new();
+
+            var input = AnsiConsole.Prompt(
+                new TextPrompt<string>("Enter any day within the desired range")
+                .Validate(validator.ValidateDateOrReturn));
+
+            if (input.ToLower().Equals("return"))
+            {
+                return;
+            }
+
+            DateOnly date = DateOnly.ParseExact(input, "yyyy-MM-dd");
+
+            if (actionChoice.Equals("Week"))
+            {
+                DateOnly sunday = date.AddDays(-(int)date.DayOfWeek);
+                DateOnly saturday = sunday.AddDays(6);
+
+                filterStart = new(sunday, TimeOnly.MinValue);
+                filterEnd = new(saturday, TimeOnly.MaxValue);
+            }
+            else if (actionChoice.Equals("Month"))
+            {
+                int month = date.Month;
+                int year = date.Year;
+
+                DateOnly first = new(year, month, 1);
+                DateOnly last = new(year, month, DateTime.DaysInMonth(year, month));
+
+                filterStart = new(first, TimeOnly.MinValue);
+                filterEnd = new(last, TimeOnly.MaxValue);
+            }
+            else // Year
+            {
+                int year = date.Year;
+
+                DateOnly first = new(year, 1, 1);
+                DateOnly last = new(year, 12, DateTime.DaysInMonth(year, 12));
+
+                filterStart = new(first, TimeOnly.MinValue);
+                filterEnd = new(last, TimeOnly.MaxValue);
+            }
+        }
+
+        actionChoice = AnsiConsole.Prompt(
+                    new SelectionPrompt<string>()
+                    .Title("Select an ordering for the results")
+                    .AddChoices(["From oldest", "From newest"]));
+        Console.WriteLine("Ordering selected: " + actionChoice);
+
+        Console.WriteLine();
+        Console.WriteLine($"Filter: showing sessions from {DateOnly.FromDateTime(filterStart)} to {DateOnly.FromDateTime(filterEnd)}");
+        Console.WriteLine();
+
+        using (var connection = DataService.OpenConnection())
+        {
+            List<CodingSession> sessions;
+            string selectCommand;
+
+            if (actionChoice.Equals("From oldest"))
+            {
+                selectCommand = @"
+                    SELECT rowid, start_date_time, end_date_time FROM coding_sessions
+                    WHERE start_date_time >= @FilterStart AND end_date_time <= @FilterEnd
+                    ORDER BY start_date_time ASC";
+            }
+            else
+            {
+                selectCommand = @"
+                    SELECT rowid, start_date_time, end_date_time FROM coding_sessions
+                    WHERE start_date_time >= @FilterStart AND end_date_time <= @FilterEnd
+                    ORDER BY start_date_time DESC";
+            }
+            sessions = connection.Query<CodingSession>(selectCommand, new { FilterStart = filterStart, FilterEnd = filterEnd }).ToList();
+
+            foreach (var session in sessions)
+            {
+                Console.WriteLine($"[{session.Id}] {session.Start} - {session.End}");
+            }
+        }
         Console.ReadLine();
     }
 
