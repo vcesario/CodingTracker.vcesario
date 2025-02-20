@@ -12,8 +12,7 @@
     - ManageSessions,
         - [x] Get Search Filter from User
         - [x] Show all entries based on search filter (no pagination/"see more"!)
-        - [] Edit query option
-        - [] Edit entry option
+        - [x] Edit entry option
         - [] Delete option (sub: ID, ID range, all)
     - [] ViewReport,
     - [] ViewGoals,
@@ -21,6 +20,7 @@
 - Data validation
     - [] Validate input DateTime
     - [] Validate DateTime Overlap on Insert
+- [] Improve navigability for submenus?
 - [] Recover from DB loss while application already open
 - [] Write Readme
 

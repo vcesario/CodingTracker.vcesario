@@ -23,4 +23,14 @@ public class UserInputValidator
 
         return ValidationResult.Success();
     }
+
+    public ValidationResult ValidateLongReturn(string input)
+    {
+        if (input.StartsWith("ForceError"))
+        {
+            return ValidationResult.Error(ApplicationTexts.USERINPUT_DATETIMEERROR);
+        }
+
+        return ValidationResult.Success();
+    }
 }
