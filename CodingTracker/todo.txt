@@ -13,7 +13,7 @@
         - [x] Get Search Filter from User
         - [x] Show all entries based on search filter (no pagination/"see more"!)
         - [x] Edit entry option
-        - [] Delete option (sub: ID, ID range, all)
+        - [x] Delete option (sub: ID, ID range, all)
     - [] ViewReport,
     - [] ViewGoals,
 - [] Table Visualization

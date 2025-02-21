@@ -18,6 +18,10 @@ public class ManageSessionsScreen
         EditSession,
         DeleteSessions,
 
+        DeleteId,
+        DeleteIdRange,
+        DeleteAll,
+
         Return,
     }
 
@@ -25,12 +29,12 @@ public class ManageSessionsScreen
     {
         Console.Clear();
 
-        Console.WriteLine("Search filter");
+        Console.WriteLine(ApplicationTexts.MANAGESESSIONS_HEADER);
         Console.WriteLine();
 
         var actionChoice = AnsiConsole.Prompt(
                     new SelectionPrompt<MenuOption>()
-                    .Title("Select result range:")
+                    .Title(ApplicationTexts.MANAGESESSIONS_PROMPT_RESULTRANGE)
                     .AddChoices([MenuOption.Week, MenuOption.Month, MenuOption.Year, MenuOption.All, MenuOption.Return]));
 
         if (actionChoice == MenuOption.Return)
@@ -38,7 +42,7 @@ public class ManageSessionsScreen
             return;
         }
 
-        Console.WriteLine($"Range selected: {actionChoice}");
+        Console.WriteLine($"{ApplicationTexts.MANAGESESSIONS_PROMPT_RESULTRANGE_LOG} {actionChoice}");
 
         DateTime filterStart = default;
         DateTime filterEnd = default;
@@ -53,7 +57,7 @@ public class ManageSessionsScreen
             UserInputValidator validator = new();
 
             var input = AnsiConsole.Prompt(
-                new TextPrompt<string>("Enter any day within the desired range")
+                new TextPrompt<string>(ApplicationTexts.MANAGESESSIONS_PROMPT_DAYRANGE)
                 .Validate(validator.ValidateDateOrReturn));
 
             if (input.ToLower().Equals("return"))
@@ -96,12 +100,12 @@ public class ManageSessionsScreen
 
         actionChoice = AnsiConsole.Prompt(
                     new SelectionPrompt<MenuOption>()
-                    .Title("Select an ordering for the results")
+                    .Title(ApplicationTexts.MANAGESESSIONS_PROMPT_ORDERING)
                     .AddChoices([MenuOption.Asc, MenuOption.Desc]));
-        Console.WriteLine("Ordering selected: " + actionChoice);
+        Console.WriteLine($"{ApplicationTexts.MANAGESESSIONS_PROMPT_ORDERING_LOG} {actionChoice}");
 
         Console.WriteLine();
-        Console.WriteLine($"Filter: showing sessions from {DateOnly.FromDateTime(filterStart)} to {DateOnly.FromDateTime(filterEnd)}");
+        Console.WriteLine(string.Format(ApplicationTexts.MANAGESESSIONS_FILTERINFO, DateOnly.FromDateTime(filterStart), DateOnly.FromDateTime(filterEnd)));
 
         using (var connection = DataService.OpenConnection())
         {
@@ -127,7 +131,7 @@ public class ManageSessionsScreen
             if (sessions.Count == 0)
             {
                 Console.WriteLine();
-                Console.WriteLine("No entry found for this filter.");
+                Console.WriteLine(ApplicationTexts.MANAGESESSIONS_NOENTRIES);
             }
             else
             {
@@ -150,6 +154,10 @@ public class ManageSessionsScreen
             case MenuOption.EditSession:
                 PromptEditSession();
                 break;
+
+            case MenuOption.DeleteSessions:
+                PromptDeleteSessions();
+                break;
         }
     }
 
@@ -159,7 +167,7 @@ public class ManageSessionsScreen
         CodingSession session;
 
         var input = AnsiConsole.Prompt(
-            new TextPrompt<string>("Enter the ID of the session to edit")
+            new TextPrompt<string>(ApplicationTexts.MANAGESESSIONS_EDIT)
             .Validate(validator.ValidateLongReturn)
         );
 
@@ -177,13 +185,13 @@ public class ManageSessionsScreen
 
             if (session == null)
             {
-                Console.WriteLine("No entry found with this Id.");
+                Console.WriteLine(ApplicationTexts.MANAGESESSIONS_NOENTRIES_ID);
                 return;
             }
         }
 
         Console.Clear();
-        Console.WriteLine("Edit session");
+        Console.WriteLine(ApplicationTexts.MANAGESESSIONS_EDIT_HEADER);
         Console.WriteLine($"#{session.Id,-6} {session.Start}\t{session.End}");
 
         var startTimeInput = AnsiConsole.Prompt(
@@ -212,7 +220,7 @@ public class ManageSessionsScreen
 
         DateTime startDateTime = DateTime.Parse(startTimeInput);
         DateTime endDateTime = DateTime.Parse(endTimeInput);
-        
+
         // check session overlap
         // ...
 
@@ -226,6 +234,192 @@ public class ManageSessionsScreen
 
         Console.WriteLine();
         Console.WriteLine("Coding session updated.");
+        Console.ReadLine();
+    }
+
+    private void PromptDeleteSessions()
+    {
+        var actionChoice = AnsiConsole.Prompt(
+            new SelectionPrompt<MenuOption>()
+            .AddChoices([MenuOption.DeleteId, MenuOption.DeleteIdRange, MenuOption.DeleteAll, MenuOption.Return])
+        );
+
+        switch (actionChoice)
+        {
+            case MenuOption.DeleteId:
+                PromptDeleteId();
+                break;
+            case MenuOption.DeleteIdRange:
+                PromptDeleteIdRange();
+                break;
+            case MenuOption.DeleteAll:
+                PromptDeleteAll();
+                break;
+            case MenuOption.Return:
+                break;
+        }
+    }
+
+    private void PromptDeleteId()
+    {
+        UserInputValidator validator = new();
+
+        var input = AnsiConsole.Prompt(
+            new TextPrompt<string>("Enter the ID of the session to delete")
+            .Validate(validator.ValidateLongReturn)
+        );
+
+        if (input.ToLower().Equals("return"))
+        {
+            return;
+        }
+
+        var confirmation = AnsiConsole.Prompt(
+            new ConfirmationPrompt($"Are you sure you want to delete session #{input}?")
+            {
+                DefaultValue = false
+            }
+        );
+
+        if (!confirmation)
+        {
+            Console.WriteLine();
+            Console.WriteLine($"Deletion canceled.");
+            Console.ReadLine();
+
+            return;
+        }
+
+        long id = long.Parse(input);
+
+        using (var connection = DataService.OpenConnection())
+        {
+            string sql = "DELETE FROM coding_sessions WHERE rowid=@Id";
+            connection.Execute(sql, new { Id = id });
+        }
+
+        Console.WriteLine();
+        Console.WriteLine($"Coding session deleted.");
+        Console.ReadLine();
+    }
+
+    private void PromptDeleteIdRange()
+    {
+        UserInputValidator validator = new();
+
+        var input = AnsiConsole.Prompt(
+            new TextPrompt<string>("Enter the lowest ID of the range to delete")
+            .Validate(validator.ValidateLongReturn)
+        );
+
+        if (input.ToLower().Equals("return"))
+        {
+            return;
+        }
+
+        var input2 = AnsiConsole.Prompt(
+            new TextPrompt<string>("Enter the highest ID of the range to delete")
+            .Validate(validator.ValidateLongReturn)
+        );
+
+        if (input2.ToLower().Equals("return"))
+        {
+            return;
+        }
+
+        var confirmation = AnsiConsole.Prompt(
+            new ConfirmationPrompt($"Are you sure you want to delete all sessions between #{input} and #{input2}?")
+            {
+                DefaultValue = false
+            }
+        );
+
+        if (!confirmation)
+        {
+            Console.WriteLine();
+            Console.WriteLine($"Deletion canceled.");
+            Console.ReadLine();
+
+            return;
+        }
+
+        confirmation = AnsiConsole.Prompt(
+            new ConfirmationPrompt($"Are you REALLY sure?")
+            {
+                DefaultValue = false
+            }
+        );
+
+        if (!confirmation)
+        {
+            Console.WriteLine();
+            Console.WriteLine($"Deletion canceled.");
+            Console.ReadLine();
+
+            return;
+        }
+
+        long id = long.Parse(input);
+        long id2 = long.Parse(input2);
+
+        if (id > id2)
+        {
+            (id, id2) = (id2, id);
+        }
+
+        using (var connection = DataService.OpenConnection())
+        {
+            string sql = "DELETE FROM coding_sessions WHERE rowid>=@Id1 AND rowid<=@Id2";
+            connection.Execute(sql, new { Id1 = id, Id2 = id2 });
+        }
+
+        Console.WriteLine();
+        Console.WriteLine($"Coding sessions deleted.");
+        Console.ReadLine();
+    }
+
+    private void PromptDeleteAll()
+    {
+        var confirmation = AnsiConsole.Prompt(
+            new ConfirmationPrompt($"Are you sure you want to delete all sessions?")
+            {
+                DefaultValue = false
+            }
+        );
+
+        if (!confirmation)
+        {
+            Console.WriteLine();
+            Console.WriteLine($"Deletion canceled.");
+            Console.ReadLine();
+
+            return;
+        }
+
+        confirmation = AnsiConsole.Prompt(
+            new ConfirmationPrompt($"Are you REALLY sure?")
+            {
+                DefaultValue = false
+            }
+        );
+
+        if (!confirmation)
+        {
+            Console.WriteLine();
+            Console.WriteLine($"Deletion canceled.");
+            Console.ReadLine();
+
+            return;
+        }
+
+        using (var connection = DataService.OpenConnection())
+        {
+            string sql = "DELETE FROM coding_sessions";
+            connection.Execute(sql);
+        }
+
+        Console.WriteLine();
+        Console.WriteLine($"Coding sessions deleted.");
         Console.ReadLine();
     }
 }

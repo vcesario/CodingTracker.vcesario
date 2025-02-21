@@ -23,6 +23,18 @@ public static class ApplicationTexts
     public const string TRACKSESSION_INPROGRESS = "Coding session in progress...";
     public const string TRACKSESSION_CONCLUDEHELPER = "(Press 'Enter' to conclude session.)";
     public const string TRACKSESSION_DISCARDHELPER = "(Press 'Esc' to discard session.)";
+    
+    public const string MANAGESESSIONS_HEADER = "Search filter";
+    public const string MANAGESESSIONS_PROMPT_RESULTRANGE = "Select result range:";
+    public const string MANAGESESSIONS_PROMPT_RESULTRANGE_LOG = "Range selected:";
+    public const string MANAGESESSIONS_PROMPT_DAYRANGE = "Enter any day within the desired range";
+    public const string MANAGESESSIONS_PROMPT_ORDERING = "Select an ordering for the results";
+    public const string MANAGESESSIONS_PROMPT_ORDERING_LOG = "Ordering selected:";
+    public const string MANAGESESSIONS_FILTERINFO = "Filter: showing sessions from {0} to {1}";
+    public const string MANAGESESSIONS_NOENTRIES = "No entry found for this filter.";
+    public const string MANAGESESSIONS_EDIT = "Enter the ID of the session to edit:";
+    public const string MANAGESESSIONS_NOENTRIES_ID = "No entry found with this Id.";
+    public const string MANAGESESSIONS_EDIT_HEADER = "Edit session";
 
     private const string TEXT_UNDEFINED = "Text undefined";
 
