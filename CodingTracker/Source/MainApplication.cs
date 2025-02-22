@@ -32,6 +32,9 @@ public static class MainApplication
                 case MainMenuOption.ManageSessions:
                     new ManageSessionsScreen().Open();
                     break;
+                case MainMenuOption.ViewReport:
+                    ViewReport();
+                    break;
                 case MainMenuOption.FillWithRandomData:
                     FillWithRandomData();
                     break;
@@ -150,6 +153,59 @@ public static class MainApplication
 
         Console.WriteLine(ApplicationTexts.SESSION_CREATED);
         Console.ReadLine();
+    }
+
+    private static void ViewReport()
+    {
+        Console.Clear();
+
+        // Your first coding session was on DD/MM/YYYY.
+        // Over the following D days, you accumulated:
+        //   N coding sessions
+        //   and a total of X hours, Y minutes and Z seconds of coding,
+        //   with an average of A hours, B minutes and C seconds of coding per session.
+
+        List<CodingSession> sessions;
+        DateTime filterStart = DateTime.MinValue;
+        DateTime filterEnd = DateTime.MaxValue;
+
+        using (var connection = DataService.OpenConnection())
+        {
+            string sql = @"SELECT rowid, start_date_time, end_date_time FROM coding_sessions
+                        WHERE start_date_time >= @FilterStart AND end_date_time <= @FilterEnd
+                        ORDER BY start_date_time ASC";
+            sessions = connection.Query<CodingSession>(sql, new { FilterStart = filterStart, FilterEnd = filterEnd }).ToList();
+        }
+
+        if (sessions.Count == 0)
+        {
+            Console.WriteLine();
+            Console.WriteLine(ApplicationTexts.MANAGESESSIONS_NOENTRIES);
+            Console.ReadLine();
+            return;
+        }
+
+        Console.WriteLine("Report");
+        Console.WriteLine();
+
+        DateOnly firstDate = DateOnly.FromDateTime(sessions[0].Start);
+        Console.WriteLine($"Your first session was on {firstDate}.");
+
+        TimeSpan dayCount = sessions[sessions.Count - 1].End - sessions[0].Start;
+        Console.WriteLine($"Over the following {dayCount.Days} days, you accumulated:");
+        Console.WriteLine($"  {sessions.Count} coding sessions");
+
+        TimeSpan durationSum = TimeSpan.Zero;
+        foreach (var session in sessions)
+        {
+            durationSum += session.GetDuration();
+        }
+
+        int hours = (int)durationSum.TotalHours;
+        double remainderHours = durationSum.TotalHours - hours;
+        Console.WriteLine($"  and a total of {{}} hours, {{}} minutes and {{}} seconds of coding,");
+
+        // to be continued...
     }
 
     private static void FillWithRandomData()

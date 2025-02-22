@@ -96,17 +96,15 @@ public class ManageSessionsScreen
 
             if (actionChoice == ManageSessionsOption.Asc)
             {
-                sql = @"
-                    SELECT rowid, start_date_time, end_date_time FROM coding_sessions
-                    WHERE start_date_time >= @FilterStart AND end_date_time <= @FilterEnd
-                    ORDER BY start_date_time ASC";
+                sql = @"SELECT rowid, start_date_time, end_date_time FROM coding_sessions
+                        WHERE start_date_time >= @FilterStart AND end_date_time <= @FilterEnd
+                        ORDER BY start_date_time ASC";
             }
             else
             {
-                sql = @"
-                    SELECT rowid, start_date_time, end_date_time FROM coding_sessions
-                    WHERE start_date_time >= @FilterStart AND end_date_time <= @FilterEnd
-                    ORDER BY start_date_time DESC";
+                sql = @"SELECT rowid, start_date_time, end_date_time FROM coding_sessions
+                        WHERE start_date_time >= @FilterStart AND end_date_time <= @FilterEnd
+                        ORDER BY start_date_time DESC";
             }
             sessions = connection.Query<CodingSession>(sql, new { FilterStart = filterStart, FilterEnd = filterEnd }).ToList();
 

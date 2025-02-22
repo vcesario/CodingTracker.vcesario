@@ -31,4 +31,10 @@ public class CodingSession
 
         return true;
     }
+
+    public TimeSpan GetDuration()
+    {
+        TimeSpan duration = End - Start;
+        return duration;
+    }
 }
