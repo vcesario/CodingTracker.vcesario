@@ -5,26 +5,6 @@ namespace vcesario.CodingTracker;
 
 public class ManageSessionsScreen
 {
-    enum MenuOption
-    {
-        Week,
-        Month,
-        Year,
-        All,
-
-        Asc,
-        Desc,
-
-        EditSession,
-        DeleteSessions,
-
-        DeleteId,
-        DeleteIdRange,
-        DeleteAll,
-
-        Return,
-    }
-
     public void Open()
     {
         Console.Clear();
@@ -32,12 +12,13 @@ public class ManageSessionsScreen
         Console.WriteLine(ApplicationTexts.MANAGESESSIONS_HEADER);
         Console.WriteLine();
 
-        var actionChoice = AnsiConsole.Prompt(
-                    new SelectionPrompt<MenuOption>()
+        ManageSessionsOption actionChoice = AnsiConsole.Prompt(
+                    new SelectionPrompt<ManageSessionsOption>()
                     .Title(ApplicationTexts.MANAGESESSIONS_PROMPT_RESULTRANGE)
-                    .AddChoices([MenuOption.Week, MenuOption.Month, MenuOption.Year, MenuOption.All, MenuOption.Return]));
+                    .AddChoices([ManageSessionsOption.Week, ManageSessionsOption.Month, ManageSessionsOption.Year, ManageSessionsOption.All, ManageSessionsOption.Return])
+                    .UseConverter(ApplicationTexts.ConvertManageSessionsOption));
 
-        if (actionChoice == MenuOption.Return)
+        if (actionChoice == ManageSessionsOption.Return)
         {
             return;
         }
@@ -47,7 +28,7 @@ public class ManageSessionsScreen
         DateTime filterStart = default;
         DateTime filterEnd = default;
 
-        if (actionChoice == MenuOption.All)
+        if (actionChoice == ManageSessionsOption.All)
         {
             filterStart = DateTime.MinValue;
             filterEnd = DateTime.MaxValue;
@@ -67,7 +48,7 @@ public class ManageSessionsScreen
 
             DateOnly date = DateOnly.ParseExact(input, "yyyy-MM-dd");
 
-            if (actionChoice == MenuOption.Week)
+            if (actionChoice == ManageSessionsOption.Week)
             {
                 DateOnly sunday = date.AddDays(-(int)date.DayOfWeek);
                 DateOnly saturday = sunday.AddDays(6);
@@ -75,7 +56,7 @@ public class ManageSessionsScreen
                 filterStart = new(sunday, TimeOnly.MinValue);
                 filterEnd = new(saturday, TimeOnly.MaxValue);
             }
-            else if (actionChoice == MenuOption.Month)
+            else if (actionChoice == ManageSessionsOption.Month)
             {
                 int month = date.Month;
                 int year = date.Year;
@@ -99,9 +80,10 @@ public class ManageSessionsScreen
         }
 
         actionChoice = AnsiConsole.Prompt(
-                    new SelectionPrompt<MenuOption>()
+                    new SelectionPrompt<ManageSessionsOption>()
                     .Title(ApplicationTexts.MANAGESESSIONS_PROMPT_ORDERING)
-                    .AddChoices([MenuOption.Asc, MenuOption.Desc]));
+                    .AddChoices([ManageSessionsOption.Asc, ManageSessionsOption.Desc])
+                    .UseConverter(ApplicationTexts.ConvertManageSessionsOption));
         Console.WriteLine($"{ApplicationTexts.MANAGESESSIONS_PROMPT_ORDERING_LOG} {actionChoice}");
 
         Console.WriteLine();
@@ -112,7 +94,7 @@ public class ManageSessionsScreen
             List<CodingSession> sessions;
             string sql;
 
-            if (actionChoice == MenuOption.Asc)
+            if (actionChoice == ManageSessionsOption.Asc)
             {
                 sql = @"
                     SELECT rowid, start_date_time, end_date_time FROM coding_sessions
@@ -145,17 +127,18 @@ public class ManageSessionsScreen
 
         Console.WriteLine();
         actionChoice = AnsiConsole.Prompt(
-            new SelectionPrompt<MenuOption>()
-            .AddChoices([MenuOption.EditSession, MenuOption.DeleteSessions, MenuOption.Return])
+            new SelectionPrompt<ManageSessionsOption>()
+            .AddChoices([ManageSessionsOption.EditSession, ManageSessionsOption.DeleteSessions, ManageSessionsOption.Return])
+            .UseConverter(ApplicationTexts.ConvertManageSessionsOption)
         );
 
         switch (actionChoice)
         {
-            case MenuOption.EditSession:
+            case ManageSessionsOption.EditSession:
                 PromptEditSession();
                 break;
 
-            case MenuOption.DeleteSessions:
+            case ManageSessionsOption.DeleteSessions:
                 PromptDeleteSessions();
                 break;
         }
@@ -192,11 +175,12 @@ public class ManageSessionsScreen
 
         Console.Clear();
         Console.WriteLine(ApplicationTexts.MANAGESESSIONS_EDIT_HEADER);
+        Console.WriteLine();
         Console.WriteLine($"#{session.Id,-6} {session.Start}\t{session.End}");
 
         var startTimeInput = AnsiConsole.Prompt(
             new TextPrompt<string>(
-                "Enter the new start date time" + $" [grey]({ApplicationTexts.USERINPUT_DATETIMEHELPER})[/]"
+                $"{ApplicationTexts.MANAGESESSIONS_PROMPT_EDITSTART} [grey]({ApplicationTexts.USERINPUT_DATETIMEHELPER})[/]"
                 + "\n  > ")
             .Validate(validator.ValidateDateTimeOrReturn)
         );
@@ -208,7 +192,7 @@ public class ManageSessionsScreen
 
         var endTimeInput = AnsiConsole.Prompt(
             new TextPrompt<string>(
-                "Enter the new end date time" + $" [grey]({ApplicationTexts.USERINPUT_DATETIMEHELPER})[/]"
+                $"{ApplicationTexts.MANAGESESSIONS_PROMPT_EDITEND} [grey]({ApplicationTexts.USERINPUT_DATETIMEHELPER})[/]"
                 + "\n  > ")
             .Validate(validator.ValidateDateTimeOrReturn)
         );
@@ -233,29 +217,30 @@ public class ManageSessionsScreen
         }
 
         Console.WriteLine();
-        Console.WriteLine("Coding session updated.");
+        Console.WriteLine(ApplicationTexts.SESSION_UPDATED);
         Console.ReadLine();
     }
 
     private void PromptDeleteSessions()
     {
         var actionChoice = AnsiConsole.Prompt(
-            new SelectionPrompt<MenuOption>()
-            .AddChoices([MenuOption.DeleteId, MenuOption.DeleteIdRange, MenuOption.DeleteAll, MenuOption.Return])
+            new SelectionPrompt<ManageSessionsOption>()
+            .AddChoices([ManageSessionsOption.DeleteId, ManageSessionsOption.DeleteIdRange, ManageSessionsOption.DeleteAll, ManageSessionsOption.Return])
+            .UseConverter(ApplicationTexts.ConvertManageSessionsOption)
         );
 
         switch (actionChoice)
         {
-            case MenuOption.DeleteId:
+            case ManageSessionsOption.DeleteId:
                 PromptDeleteId();
                 break;
-            case MenuOption.DeleteIdRange:
+            case ManageSessionsOption.DeleteIdRange:
                 PromptDeleteIdRange();
                 break;
-            case MenuOption.DeleteAll:
+            case ManageSessionsOption.DeleteAll:
                 PromptDeleteAll();
                 break;
-            case MenuOption.Return:
+            case ManageSessionsOption.Return:
                 break;
         }
     }
@@ -265,7 +250,7 @@ public class ManageSessionsScreen
         UserInputValidator validator = new();
 
         var input = AnsiConsole.Prompt(
-            new TextPrompt<string>("Enter the ID of the session to delete")
+            new TextPrompt<string>(ApplicationTexts.MANAGESESSIONS_DELETE)
             .Validate(validator.ValidateLongReturn)
         );
 
@@ -275,7 +260,7 @@ public class ManageSessionsScreen
         }
 
         var confirmation = AnsiConsole.Prompt(
-            new ConfirmationPrompt($"Are you sure you want to delete session #{input}?")
+            new ConfirmationPrompt(string.Format(ApplicationTexts.MANAGESESSIONS_PROMPT_DELETE, input))
             {
                 DefaultValue = false
             }
@@ -284,7 +269,7 @@ public class ManageSessionsScreen
         if (!confirmation)
         {
             Console.WriteLine();
-            Console.WriteLine($"Deletion canceled.");
+            Console.WriteLine(ApplicationTexts.MANAGESESSIONS_DELETE_CANCELED);
             Console.ReadLine();
 
             return;
@@ -299,7 +284,7 @@ public class ManageSessionsScreen
         }
 
         Console.WriteLine();
-        Console.WriteLine($"Coding session deleted.");
+        Console.WriteLine(ApplicationTexts.SESSION_DELETED);
         Console.ReadLine();
     }
 
@@ -308,7 +293,7 @@ public class ManageSessionsScreen
         UserInputValidator validator = new();
 
         var input = AnsiConsole.Prompt(
-            new TextPrompt<string>("Enter the lowest ID of the range to delete")
+            new TextPrompt<string>(ApplicationTexts.MANAGESESSIONS_DELETE_LOW)
             .Validate(validator.ValidateLongReturn)
         );
 
@@ -318,7 +303,7 @@ public class ManageSessionsScreen
         }
 
         var input2 = AnsiConsole.Prompt(
-            new TextPrompt<string>("Enter the highest ID of the range to delete")
+            new TextPrompt<string>(ApplicationTexts.MANAGESESSIONS_DELETE_HIGH)
             .Validate(validator.ValidateLongReturn)
         );
 
@@ -328,7 +313,7 @@ public class ManageSessionsScreen
         }
 
         var confirmation = AnsiConsole.Prompt(
-            new ConfirmationPrompt($"Are you sure you want to delete all sessions between #{input} and #{input2}?")
+            new ConfirmationPrompt(string.Format(ApplicationTexts.MANAGESESSIONS_PROMPT_DELETERANGE, input, input2))
             {
                 DefaultValue = false
             }
@@ -337,14 +322,14 @@ public class ManageSessionsScreen
         if (!confirmation)
         {
             Console.WriteLine();
-            Console.WriteLine($"Deletion canceled.");
+            Console.WriteLine(ApplicationTexts.MANAGESESSIONS_DELETE_CANCELED);
             Console.ReadLine();
 
             return;
         }
 
         confirmation = AnsiConsole.Prompt(
-            new ConfirmationPrompt($"Are you REALLY sure?")
+            new ConfirmationPrompt(ApplicationTexts.CONFIRM_AGAIN)
             {
                 DefaultValue = false
             }
@@ -353,7 +338,7 @@ public class ManageSessionsScreen
         if (!confirmation)
         {
             Console.WriteLine();
-            Console.WriteLine($"Deletion canceled.");
+            Console.WriteLine(ApplicationTexts.MANAGESESSIONS_DELETE_CANCELED);
             Console.ReadLine();
 
             return;
@@ -374,14 +359,14 @@ public class ManageSessionsScreen
         }
 
         Console.WriteLine();
-        Console.WriteLine($"Coding sessions deleted.");
+        Console.WriteLine(ApplicationTexts.SESSION_DELETED);
         Console.ReadLine();
     }
 
     private void PromptDeleteAll()
     {
         var confirmation = AnsiConsole.Prompt(
-            new ConfirmationPrompt($"Are you sure you want to delete all sessions?")
+            new ConfirmationPrompt(ApplicationTexts.MANAGESESSIONS_PROMPT_DELETEALL)
             {
                 DefaultValue = false
             }
@@ -390,14 +375,14 @@ public class ManageSessionsScreen
         if (!confirmation)
         {
             Console.WriteLine();
-            Console.WriteLine($"Deletion canceled.");
+            Console.WriteLine(ApplicationTexts.MANAGESESSIONS_DELETE_CANCELED);
             Console.ReadLine();
 
             return;
         }
 
         confirmation = AnsiConsole.Prompt(
-            new ConfirmationPrompt($"Are you REALLY sure?")
+            new ConfirmationPrompt(ApplicationTexts.CONFIRM_AGAIN)
             {
                 DefaultValue = false
             }
@@ -406,7 +391,7 @@ public class ManageSessionsScreen
         if (!confirmation)
         {
             Console.WriteLine();
-            Console.WriteLine($"Deletion canceled.");
+            Console.WriteLine(ApplicationTexts.MANAGESESSIONS_DELETE_CANCELED);
             Console.ReadLine();
 
             return;
@@ -419,7 +404,7 @@ public class ManageSessionsScreen
         }
 
         Console.WriteLine();
-        Console.WriteLine($"Coding sessions deleted.");
+        Console.WriteLine(ApplicationTexts.SESSION_DELETED);
         Console.ReadLine();
     }
 }

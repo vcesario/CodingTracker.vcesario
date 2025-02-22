@@ -19,11 +19,21 @@ public static class ApplicationTexts
     public const string USERINPUT_DATETIMEERROR = "Couldn't parse DateTime. Use provided template.";
     public const string SESSION_CREATED = "Coding session created.";
     public const string SESSION_DISCARDED = "Coding session discarded.";
+    public const string SESSION_DELETED = "Coding session deleted.";
+    public const string SESSION_UPDATED = "Coding session updated.";
     public const string RANDOMDATA_CREATED = "Random data created.";
     public const string TRACKSESSION_INPROGRESS = "Coding session in progress...";
     public const string TRACKSESSION_CONCLUDEHELPER = "(Press 'Enter' to conclude session.)";
     public const string TRACKSESSION_DISCARDHELPER = "(Press 'Esc' to discard session.)";
-    
+
+    public const string MANAGESESSIONSOPTION_ASC = "From earliest";
+    public const string MANAGESESSIONSOPTION_DESC = "From latest";
+    public const string MANAGESESSIONSOPTION_EDITSESSION = "Edit session";
+    public const string MANAGESESSIONSOPTION_DELETESESSIONS = "Delete sessions";
+    public const string MANAGESESSIONSOPTION_DELETEID = "Delete single ID";
+    public const string MANAGESESSIONSOPTION_DELETEIDRANGE = "Delete ID range";
+    public const string MANAGESESSIONSOPTION_DELETEALL = "Delete all sessions";
+
     public const string MANAGESESSIONS_HEADER = "Search filter";
     public const string MANAGESESSIONS_PROMPT_RESULTRANGE = "Select result range:";
     public const string MANAGESESSIONS_PROMPT_RESULTRANGE_LOG = "Range selected:";
@@ -35,6 +45,17 @@ public static class ApplicationTexts
     public const string MANAGESESSIONS_EDIT = "Enter the ID of the session to edit:";
     public const string MANAGESESSIONS_NOENTRIES_ID = "No entry found with this Id.";
     public const string MANAGESESSIONS_EDIT_HEADER = "Edit session";
+    public const string MANAGESESSIONS_PROMPT_EDITSTART = "Enter the new start date time";
+    public const string MANAGESESSIONS_PROMPT_EDITEND = "Enter the new end date time";
+
+    public const string MANAGESESSIONS_DELETE = "Enter the ID of the session to delete:";
+    public const string MANAGESESSIONS_DELETE_LOW = "Enter the lowest ID of the range to delete:";
+    public const string MANAGESESSIONS_DELETE_HIGH = "Enter the highest ID of the range to delete:";
+    public const string MANAGESESSIONS_PROMPT_DELETE = "Are you sure you want to delete session #{0}?";
+    public const string MANAGESESSIONS_PROMPT_DELETERANGE = "Are you sure you want to delete all sessions between #{0} and #{1}?";
+    public const string MANAGESESSIONS_PROMPT_DELETEALL = "Are you sure you want to delete all sessions?";
+    public const string MANAGESESSIONS_DELETE_CANCELED = "Deletion canceled.";
+    public const string CONFIRM_AGAIN = "Are you REALLY sure?";
 
     private const string TEXT_UNDEFINED = "Text undefined";
 
@@ -56,6 +77,39 @@ public static class ApplicationTexts
                 return Markup.Escape(MAINMENUOPTION_FILLWITHRANDOM);
             case MainMenuOption.ExitApplication:
                 return MAINMENUOPTION_EXIT;
+            default:
+                return TEXT_UNDEFINED;
+        }
+    }
+
+    public static string ConvertManageSessionsOption(ManageSessionsOption option)
+    {
+        switch (option)
+        {
+            case ManageSessionsOption.Week:
+                return option.ToString();
+            case ManageSessionsOption.Month:
+                return option.ToString();
+            case ManageSessionsOption.Year:
+                return option.ToString();
+            case ManageSessionsOption.All:
+                return option.ToString();
+            case ManageSessionsOption.Asc:
+                return MANAGESESSIONSOPTION_ASC;
+            case ManageSessionsOption.Desc:
+                return MANAGESESSIONSOPTION_DESC;
+            case ManageSessionsOption.EditSession:
+                return MANAGESESSIONSOPTION_EDITSESSION;
+            case ManageSessionsOption.DeleteSessions:
+                return MANAGESESSIONSOPTION_DELETESESSIONS;
+            case ManageSessionsOption.DeleteId:
+                return MANAGESESSIONSOPTION_DELETEID;
+            case ManageSessionsOption.DeleteIdRange:
+                return MANAGESESSIONSOPTION_DELETEIDRANGE;
+            case ManageSessionsOption.DeleteAll:
+                return MANAGESESSIONSOPTION_DELETEALL;
+            case ManageSessionsOption.Return:
+                return option.ToString();
             default:
                 return TEXT_UNDEFINED;
         }
