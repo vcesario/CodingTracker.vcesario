@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 using Dapper;
 using Spectre.Console;
 
@@ -185,27 +186,65 @@ public static class MainApplication
             return;
         }
 
-        Console.WriteLine("Report");
+        Console.WriteLine(ApplicationTexts.REPORT_HEADER);
         Console.WriteLine();
 
+        var stashedCulture = CultureInfo.CurrentCulture;
+        CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
+
         DateOnly firstDate = DateOnly.FromDateTime(sessions[0].Start);
-        Console.WriteLine($"Your first session was on {firstDate}.");
+        Console.WriteLine(string.Format(ApplicationTexts.REPORT_FIRSTSESSION, firstDate.ToLongDateString()));
+
+        CultureInfo.CurrentCulture = stashedCulture;
+        Console.ReadLine();
 
         TimeSpan dayCount = sessions[sessions.Count - 1].End - sessions[0].Start;
-        Console.WriteLine($"Over the following {dayCount.Days} days, you accumulated:");
-        Console.WriteLine($"  {sessions.Count} coding sessions");
+        Console.Write(string.Format(ApplicationTexts.REPORT_FOLLOWINGDAYS, dayCount.Days));
+        Console.ReadLine();
 
-        TimeSpan durationSum = TimeSpan.Zero;
+        Console.Write("  " + string.Format(ApplicationTexts.REPORT_SESSIONCOUNT, sessions.Count));
+        Console.ReadLine();
+
+        TimeSpan durationTotal = TimeSpan.Zero;
         foreach (var session in sessions)
         {
-            durationSum += session.GetDuration();
+            durationTotal += session.GetDuration();
         }
 
-        int hours = (int)durationSum.TotalHours;
-        double remainderHours = durationSum.TotalHours - hours;
-        Console.WriteLine($"  and a total of {{}} hours, {{}} minutes and {{}} seconds of coding,");
+        if (durationTotal.Hours > 0)
+        {
+            int daysInHours = durationTotal.Days * 24;
+            Console.Write("  " + string.Format(ApplicationTexts.REPORT_TOTAL_HMS, durationTotal.Hours + daysInHours, durationTotal.Minutes, durationTotal.Seconds));
+        }
+        else if (durationTotal.Minutes > 0)
+        {
+            Console.Write("  " + string.Format(ApplicationTexts.REPORT_TOTAL_MS, durationTotal.Minutes, durationTotal.Seconds));
+        }
+        else
+        {
+            Console.Write("  " + string.Format(ApplicationTexts.REPORT_TOTAL_S, durationTotal.Seconds));
+        }
+        Console.ReadLine();
 
-        // to be continued...
+        TimeSpan durationAverage = durationTotal / sessions.Count;
+        if (durationAverage.Hours > 0)
+        {
+            int daysInHours = durationAverage.Days * 24;
+            Console.Write("  " + string.Format(ApplicationTexts.REPORT_AVERAGE_HMS, durationAverage.Hours + daysInHours, durationAverage.Minutes, durationAverage.Seconds));
+        }
+        else if (durationAverage.Minutes > 0)
+        {
+            Console.Write("  " + string.Format(ApplicationTexts.REPORT_AVERAGE_MS, durationAverage.Minutes, durationAverage.Seconds));
+        }
+        else
+        {
+            Console.Write("  " + string.Format(ApplicationTexts.REPORT_AVERAGE_S, durationAverage.Seconds));
+        }
+
+        Console.WriteLine();
+        Console.WriteLine();
+        Console.Write($"\t{ApplicationTexts.REPORT_END}");
+        Console.ReadLine();
     }
 
     private static void FillWithRandomData()

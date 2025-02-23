@@ -14,7 +14,7 @@
         - [x] Show all entries based on search filter (no pagination/"see more"!)
         - [x] Edit entry option
         - [x] Delete option (sub: ID, ID range, all)
-    - [] ViewReport,
+    - [x] ViewReport,
     - [] ViewGoals,
 - [] Table Visualization
 - Data validation

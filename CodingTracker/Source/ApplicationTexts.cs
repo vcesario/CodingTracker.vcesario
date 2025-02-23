@@ -57,6 +57,18 @@ public static class ApplicationTexts
     public const string MANAGESESSIONS_DELETE_CANCELED = "Deletion canceled.";
     public const string CONFIRM_AGAIN = "Are you REALLY sure?";
 
+    public const string REPORT_HEADER = "Report";
+    public const string REPORT_FIRSTSESSION = "Your first session was on {0}.";
+    public const string REPORT_FOLLOWINGDAYS = "Over the following {0} days, you accumulated:";
+    public const string REPORT_SESSIONCOUNT = "{0} coding sessions,";
+    public const string REPORT_TOTAL_HMS = "a total of {0} hours, {1} minutes and {2} seconds of coding,";
+    public const string REPORT_TOTAL_MS = "a total of {0} minutes and {1} seconds of coding,";
+    public const string REPORT_TOTAL_S = "a total of {0} seconds of coding,";
+    public const string REPORT_AVERAGE_HMS = "and an average of {0} hours, {1} minutes and {2} seconds of coding per session.";
+    public const string REPORT_AVERAGE_MS = "and an average of {0} minutes and {1} seconds of coding per session.";
+    public const string REPORT_AVERAGE_S = "and an average of {0} seconds of coding per session.";
+    public const string REPORT_END = "-- END OF REPORT --";
+
     private const string TEXT_UNDEFINED = "Text undefined";
 
     public static string ConvertMainMenuOption(MainMenuOption option)
