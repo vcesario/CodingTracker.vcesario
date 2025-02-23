@@ -36,6 +36,9 @@ public static class MainApplication
                 case MainMenuOption.ViewReport:
                     ViewReport();
                     break;
+                case MainMenuOption.ViewGoals:
+                    new ManageGoalsScreen().Open();
+                    break;
                 case MainMenuOption.FillWithRandomData:
                     FillWithRandomData();
                     break;
