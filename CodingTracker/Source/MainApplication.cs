@@ -192,13 +192,8 @@ public static class MainApplication
         Console.WriteLine(ApplicationTexts.REPORT_HEADER);
         Console.WriteLine();
 
-        var stashedCulture = CultureInfo.CurrentCulture;
-        CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
-
         DateOnly firstDate = DateOnly.FromDateTime(sessions[0].Start);
-        Console.WriteLine(string.Format(ApplicationTexts.REPORT_FIRSTSESSION, firstDate.ToLongDateString()));
-
-        CultureInfo.CurrentCulture = stashedCulture;
+        Console.WriteLine(string.Format(ApplicationTexts.REPORT_FIRSTSESSION, firstDate.ToLongDateStringUs()));
         Console.ReadLine();
 
         TimeSpan dayCount = sessions[sessions.Count - 1].End - sessions[0].Start;
