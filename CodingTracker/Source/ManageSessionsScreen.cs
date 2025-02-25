@@ -96,15 +96,15 @@ public class ManageSessionsScreen
 
             if (actionChoice == ManageSessionsOption.Asc)
             {
-                sql = @"SELECT rowid, start_date_time, end_date_time FROM coding_sessions
-                        WHERE start_date_time >= @FilterStart AND end_date_time <= @FilterEnd
-                        ORDER BY start_date_time ASC";
+                sql = @"SELECT rowid, start_date, end_date FROM coding_sessions
+                        WHERE start_date >= @FilterStart AND end_date <= @FilterEnd
+                        ORDER BY start_date ASC";
             }
             else
             {
-                sql = @"SELECT rowid, start_date_time, end_date_time FROM coding_sessions
-                        WHERE start_date_time >= @FilterStart AND end_date_time <= @FilterEnd
-                        ORDER BY start_date_time DESC";
+                sql = @"SELECT rowid, start_date, end_date FROM coding_sessions
+                        WHERE start_date >= @FilterStart AND end_date <= @FilterEnd
+                        ORDER BY start_date DESC";
             }
             sessions = connection.Query<CodingSession>(sql, new { FilterStart = filterStart, FilterEnd = filterEnd }).ToList();
 
@@ -161,7 +161,7 @@ public class ManageSessionsScreen
 
         using (var connection = DataService.OpenConnection())
         {
-            string sql = "SELECT rowid, start_date_time, end_date_time FROM coding_sessions WHERE rowid=@Id";
+            string sql = "SELECT rowid, start_date, end_date FROM coding_sessions WHERE rowid=@Id";
             session = connection.QueryFirst<CodingSession>(sql, new { Id = id });
 
             if (session == null)
@@ -209,7 +209,7 @@ public class ManageSessionsScreen
         using (var connection = DataService.OpenConnection())
         {
             string sql = @"UPDATE coding_sessions
-                            SET start_date_time=@Start, end_date_time=@End
+                            SET start_date=@Start, end_date=@End
                             WHERE rowid=@Id";
             connection.Execute(sql, new { Start = startDateTime, End = endDateTime, Id = id });
         }

@@ -69,7 +69,7 @@ public static class ApplicationTexts
     public const string REPORT_AVERAGE_S = "and an average of {0} seconds of coding per session.";
     public const string REPORT_END = "-- END OF REPORT --";
 
-    private const string TEXT_UNDEFINED = "Text undefined";
+    public const string TEXT_UNDEFINED = "Text undefined";
 
     public static string ConvertMainMenuOption(MainMenuOption option)
     {

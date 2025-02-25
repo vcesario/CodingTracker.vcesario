@@ -175,9 +175,9 @@ public static class MainApplication
 
         using (var connection = DataService.OpenConnection())
         {
-            string sql = @"SELECT rowid, start_date_time, end_date_time FROM coding_sessions
-                        WHERE start_date_time >= @FilterStart AND end_date_time <= @FilterEnd
-                        ORDER BY start_date_time ASC";
+            string sql = @"SELECT rowid, start_date, end_date FROM coding_sessions
+                        WHERE start_date >= @FilterStart AND end_date <= @FilterEnd
+                        ORDER BY start_date ASC";
             sessions = connection.Query<CodingSession>(sql, new { FilterStart = filterStart, FilterEnd = filterEnd }).ToList();
         }
 

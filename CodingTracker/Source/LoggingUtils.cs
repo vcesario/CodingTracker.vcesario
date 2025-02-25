@@ -4,6 +4,8 @@ namespace vcesario.CodingTracker;
 
 public static class LoggingUtils
 {
+    public static DateOnly Today => DateOnly.FromDateTime(DateTime.Today);
+
     public static string ToLongDateStringUs(this DateOnly date)
     {
         var stashedCulture = CultureInfo.CurrentCulture;

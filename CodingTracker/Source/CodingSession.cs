@@ -17,11 +17,11 @@ public class CodingSession
         m_End = endDateTime;
     }
 
-    public CodingSession(long rowid, DateTime start_date_time, DateTime end_date_time)
+    public CodingSession(long rowid, DateTime start_date, DateTime end_date)
     {
         m_Id = rowid;
-        m_Start = start_date_time;
-        m_End = end_date_time;
+        m_Start = start_date;
+        m_End = end_date;
     }
 
     public bool Validate()

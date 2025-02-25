@@ -10,12 +10,13 @@ public static class DataService
         using (var connection = OpenConnection())
         {
             string sql = @"CREATE TABLE IF NOT EXISTS coding_sessions(
-                                start_date_time DATE NOT NULL,
-                                end_date_time DATE NOT NULL
+                                start_date DATE NOT NULL,
+                                end_date DATE NOT NULL
                             );
                             
                             CREATE TABLE IF NOT EXISTS coding_goal(
                                 value INT NOT NULL,
+                                start_date DATE NOT NULL,
                                 due_date DATE NOT NULL
                             )";
             connection.Execute(sql);
@@ -35,7 +36,7 @@ public static class DataService
     {
         using (var connection = OpenConnection())
         {
-            string sql = @"INSERT INTO coding_sessions (start_date_time, end_date_time)
+            string sql = @"INSERT INTO coding_sessions (start_date, end_date)
                             VALUES (@StartDateTime, @EndDateTime)";
             var anonymousSession = new
             {

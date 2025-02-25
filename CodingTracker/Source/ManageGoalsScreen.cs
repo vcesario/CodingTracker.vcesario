@@ -23,7 +23,7 @@ public class ManageGoalsScreen
             CodingGoal? goal;
             using (var connection = DataService.OpenConnection())
             {
-                string sql = "SELECT value, due_date FROM coding_goal";
+                string sql = "SELECT value, start_date, due_date FROM coding_goal";
                 goal = connection.QueryFirstOrDefault<CodingGoal>(sql);
             }
 
@@ -32,16 +32,31 @@ public class ManageGoalsScreen
             {
                 Console.WriteLine("No coding goal defined.");
             }
-            // what about past goals?
+            else if (goal.DueDate < DateOnly.FromDateTime(DateTime.Today))
+            {
+                PrintPastGoal(goal);
+            }
             else
             {
-                PrintGoal(goal);
+                PrintCurrentGoal(goal);
             }
 
             Console.WriteLine();
             var actionChoice = AnsiConsole.Prompt(
                 new SelectionPrompt<ManageGoalsOption>()
                 .AddChoices([ManageGoalsOption.NewGoal, ManageGoalsOption.Return])
+                .UseConverter((option) =>
+                {
+                    switch (option)
+                    {
+                        case ManageGoalsOption.NewGoal:
+                            return "Define new goal";
+                        case ManageGoalsOption.Return:
+                            return "Return";
+                        default:
+                            return ApplicationTexts.TEXT_UNDEFINED;
+                    }
+                })
             );
 
             switch (actionChoice)
@@ -58,7 +73,29 @@ public class ManageGoalsScreen
         while (!choseReturn);
     }
 
-    private void PrintGoal(CodingGoal goal)
+    private void PrintPastGoal(CodingGoal goal)
+    {
+        Console.WriteLine($"Your goal of achieving {goal.Value} hours of coding between {goal.StartDate.ToLongDateStringUs()}"
+                            + $" and {goal.DueDate.ToLongDateStringUs()} has expired!");
+
+        uint current = 0;
+        float percent = 0;
+        // ...
+        Console.WriteLine();
+        Console.Write("  " + $"Total progress: {current}/{goal.Value} ({percent}%)");
+
+        if (current >= goal.Value)
+        {
+            Console.WriteLine(" " + "You reached your goal! Congrats!");
+        }
+        else
+        {
+            Console.WriteLine(" " + "You didn't reach your goal. Realign your expectations and don't give up. You got this!");
+        }
+    }
+
+
+    private void PrintCurrentGoal(CodingGoal goal)
     {
         Console.WriteLine($"Current goal: Achieve {goal.Value} hours of coding by {goal.DueDate.ToLongDateStringUs()}.");
 
@@ -120,7 +157,8 @@ public class ManageGoalsScreen
             return;
         }
 
-        DateTime date = DateTime.Parse(dateInput);
+        DateTime today = DateTime.Today;
+        DateTime dueDate = DateTime.Parse(dateInput);
         int value = int.Parse(valueInput);
 
         using (var connection = DataService.OpenConnection())
@@ -128,9 +166,9 @@ public class ManageGoalsScreen
             string sql = "DELETE FROM coding_goal";
             connection.Execute(sql);
 
-            sql = @"INSERT INTO coding_goal (value, due_date)
-                    VALUES (@Value, @Date)";
-            connection.Execute(sql, new { Value = value, Date = date });
+            sql = @"INSERT INTO coding_goal (value, start_date, due_date)
+                    VALUES (@Value, @StartDate, @DueDate)";
+            connection.Execute(sql, new { Value = value, StartDate = today, DueDate = dueDate });
         }
 
         Console.WriteLine("New coding goal defined.");
