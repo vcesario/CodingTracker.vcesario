@@ -15,13 +15,16 @@
         - [x] Edit entry option
         - [x] Delete option (sub: ID, ID range, all)
     - [x] ViewReport,
-    - [] ViewGoals,
+    - [x] ViewGoals,
 - [] Table Visualization
 - Data validation
     - [] Validate input DateTime
     - [] Validate DateTime Overlap on Insert
 - [] Improve navigability for submenus?
 - [] Recover from DB loss while application already open
+- Last cleanup
+    - [] Refactor Enums + Menu Option Converters
+    - [] Remove uints
 - [] Write Readme
 
 ======================

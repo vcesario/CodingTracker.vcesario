@@ -2,7 +2,7 @@ using System.Globalization;
 
 namespace vcesario.CodingTracker;
 
-public static class LoggingUtils
+public static class DateUtils
 {
     public static DateOnly Today => DateOnly.FromDateTime(DateTime.Today);
 
@@ -16,5 +16,13 @@ public static class LoggingUtils
         CultureInfo.CurrentCulture = stashedCulture;
 
         return dateString;
+    }
+
+    public static int DaysBetween(this DateOnly date, DateOnly otherDate)
+    {
+        DateTime thisDateTime = new(date, TimeOnly.MinValue);
+        DateTime otherDateTime = new(otherDate,TimeOnly.MinValue);
+        int daysBetween = (thisDateTime - otherDateTime).Duration().Days;
+        return daysBetween;
     }
 }

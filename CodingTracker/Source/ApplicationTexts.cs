@@ -4,7 +4,6 @@ namespace vcesario.CodingTracker;
 
 public static class ApplicationTexts
 {
-    public const string MAINMENU_PROMPT = "What do you want to do?";
     public const string MAINMENUOPTION_STARTNEWSESSION = "Start new session";
     public const string MAINMENUOPTION_LOGSESSION = "Enter session manually";
     public const string MAINMENUOPTION_MANAGESESSIONS = "Manage sessions";
@@ -12,6 +11,7 @@ public static class ApplicationTexts
     public const string MAINMENUOPTION_VIEWGOALS = "View goals";
     public const string MAINMENUOPTION_FILLWITHRANDOM = "[DEBUG] Fill with random data";
     public const string MAINMENUOPTION_EXIT = "Exit application";
+
     public const string LOGSESSIONPROMPT_STARTDATETIME = "Enter the start date and time";
     public const string LOGSESSIONPROMPT_ENDDATETIME = "Enter the end date and time";
     public const string CODINGSESSION_NOTACCEPTED = "This coding session is not acceptable.";
@@ -21,7 +21,9 @@ public static class ApplicationTexts
     public const string SESSION_DISCARDED = "Coding session discarded.";
     public const string SESSION_DELETED = "Coding session deleted.";
     public const string SESSION_UPDATED = "Coding session updated.";
+    
     public const string RANDOMDATA_CREATED = "Random data created.";
+
     public const string TRACKSESSION_INPROGRESS = "Coding session in progress...";
     public const string TRACKSESSION_CONCLUDEHELPER = "(Press 'Enter' to conclude session.)";
     public const string TRACKSESSION_DISCARDHELPER = "(Press 'Esc' to discard session.)";
@@ -69,6 +71,24 @@ public static class ApplicationTexts
     public const string REPORT_AVERAGE_S = "and an average of {0} seconds of coding per session.";
     public const string REPORT_END = "-- END OF REPORT --";
 
+    public const string GOAL_HEADER = "View coding goal";
+    public const string GOAL_NEWDEFINED = "New coding goal defined.";
+    public const string GOAL_UNDEFINED = "No coding goal defined.";
+    public const string GOAL_MENUOPTION_NEWGOAL = "Define new goal";
+    public const string GOAL_INFO_PASTGOAL = "Your goal of achieving {0} hours of coding between {1} and {2} has expired!";
+    public const string GOAL_INFO_TOTALPROGRESS = "Total progress: {0}/{1} ({2}%)";
+    public const string GOAL_PRAISE_SUCCESS = "You reached your goal! Congrats!";
+    public const string GOAL_EXPIRED_FAIL = "You didn't reach your goal, but don't give up. You got this!";
+    public const string GOAL_INFO_CURRENTGOAL = "Current goal: Achieve {0} hours of coding by {1}.";
+    public const string GOAL_INFO_CURRENTGOAL_ATLEAST = "To reach your goal by then, you need to code at least";
+    public const string GOAL_INFO_CURRENTGOAL_DAILYTOTAL = "{0} hours per day (counting today).";
+    public const string GOAL_INFO_CURRENTGOAL_DAILYPROGRESS = "Today's progress: {0}/{1} ({2}%)";
+    public const string GOAL_PRAISE_SUCCESSTODAY = "You're good for today. Great job!";
+    public const string GOAL_PROMPT_NEWDATE = "Set a date for your new goal [grey](yyyy-MM-dd)[/]:";
+    public const string GOAL_PROMPT_HOURS = "Set an amount of hours to achieve by the chosen date:";
+
+    public const string GENERIC_PROMPT_ACTION = "What do you want to do?";
+    public const string GENERICMENUOPTION_RETURN = "Return";
     public const string TEXT_UNDEFINED = "Text undefined";
 
     public static string ConvertMainMenuOption(MainMenuOption option)

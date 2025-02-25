@@ -18,7 +18,7 @@ public class ManageGoalsScreen
         {
             Console.Clear();
 
-            Console.WriteLine("View coding goal");
+            Console.WriteLine(ApplicationTexts.GOAL_HEADER);
 
             CodingGoal? goal;
             using (var connection = DataService.OpenConnection())
@@ -30,9 +30,9 @@ public class ManageGoalsScreen
             Console.WriteLine();
             if (goal == null)
             {
-                Console.WriteLine("No coding goal defined.");
+                Console.WriteLine(ApplicationTexts.GOAL_UNDEFINED);
             }
-            else if (goal.DueDate < DateOnly.FromDateTime(DateTime.Today))
+            else if (goal.DueDate < DateUtils.Today)
             {
                 PrintPastGoal(goal);
             }
@@ -44,15 +44,16 @@ public class ManageGoalsScreen
             Console.WriteLine();
             var actionChoice = AnsiConsole.Prompt(
                 new SelectionPrompt<ManageGoalsOption>()
+                .Title(ApplicationTexts.GENERIC_PROMPT_ACTION)
                 .AddChoices([ManageGoalsOption.NewGoal, ManageGoalsOption.Return])
                 .UseConverter((option) =>
                 {
                     switch (option)
                     {
                         case ManageGoalsOption.NewGoal:
-                            return "Define new goal";
+                            return ApplicationTexts.GOAL_MENUOPTION_NEWGOAL;
                         case ManageGoalsOption.Return:
-                            return "Return";
+                            return ApplicationTexts.GENERICMENUOPTION_RETURN;
                         default:
                             return ApplicationTexts.TEXT_UNDEFINED;
                     }
@@ -75,39 +76,36 @@ public class ManageGoalsScreen
 
     private void PrintPastGoal(CodingGoal goal)
     {
-        Console.WriteLine($"Your goal of achieving {goal.Value} hours of coding between {goal.StartDate.ToLongDateStringUs()}"
-                            + $" and {goal.DueDate.ToLongDateStringUs()} has expired!");
+        Console.WriteLine(string.Format(ApplicationTexts.GOAL_INFO_PASTGOAL, goal.Value, goal.StartDate.ToLongDateStringUs(), goal.DueDate.ToLongDateStringUs()));
 
-        uint current = 0;
-        float percent = 0;
-        // ...
+        uint current = GetTotalHoursBetweenDates(goal.StartDate, goal.DueDate);
+        float percent = (float)current / goal.Value * 100;
         Console.WriteLine();
-        Console.Write("  " + $"Total progress: {current}/{goal.Value} ({percent}%)");
+        Console.Write("  " + string.Format(ApplicationTexts.GOAL_INFO_TOTALPROGRESS, current, goal.Value, percent));
 
         if (current >= goal.Value)
         {
-            Console.WriteLine(" " + "You reached your goal! Congrats!");
+            Console.WriteLine(" " + ApplicationTexts.GOAL_PRAISE_SUCCESS);
         }
         else
         {
-            Console.WriteLine(" " + "You didn't reach your goal. Realign your expectations and don't give up. You got this!");
+            Console.WriteLine(" " + ApplicationTexts.GOAL_EXPIRED_FAIL);
         }
     }
 
 
     private void PrintCurrentGoal(CodingGoal goal)
     {
-        Console.WriteLine($"Current goal: Achieve {goal.Value} hours of coding by {goal.DueDate.ToLongDateStringUs()}.");
+        Console.WriteLine(string.Format(ApplicationTexts.GOAL_INFO_CURRENTGOAL, goal.Value, goal.DueDate.ToLongDateStringUs()));
 
-        uint current = 0;
-        float percent = 0;
-        // ...
+        uint current = GetTotalHoursBetweenDates(goal.StartDate, goal.DueDate);
+        float percent = (float)current / goal.Value * 100;
         Console.WriteLine();
-        Console.Write("  " + $"Total progress: {current}/{goal.Value} ({percent}%)");
+        Console.Write("  " + string.Format(ApplicationTexts.GOAL_INFO_TOTALPROGRESS, current, goal.Value, percent));
 
         if (current >= goal.Value)
         {
-            Console.WriteLine(" " + "You reached your goal! Congrats!");
+            Console.WriteLine(" " + ApplicationTexts.GOAL_PRAISE_SUCCESS);
         }
         else
         {
@@ -115,19 +113,21 @@ public class ManageGoalsScreen
         }
 
         Console.WriteLine();
-        Console.WriteLine("To reach your goal by then, you need to code at least");
-        uint dailyTotal = 0;
-        // ...
-        Console.WriteLine("  " + $"{dailyTotal} hours per day (counting today).");
+        Console.WriteLine(ApplicationTexts.GOAL_INFO_CURRENTGOAL_ATLEAST);
 
-        uint dailyCurrent = 0;
-        float dailyPercent = 0;
-        // ...
+        int remainingDays = goal.DueDate.DaysBetween(DateUtils.Today) + 1;
+        uint totalBeforeToday = GetTotalHoursBetweenDates(goal.StartDate, DateUtils.Today.AddDays(-1));
+        uint remainingHours = goal.Value - totalBeforeToday;
+        float dailyTotal = (float)remainingHours / remainingDays;
+        Console.WriteLine("  " + string.Format(ApplicationTexts.GOAL_INFO_CURRENTGOAL_DAILYTOTAL, dailyTotal));
+
+        uint dailyCurrent = GetTotalHoursBetweenDates(DateUtils.Today, DateUtils.Today);
+        float dailyPercent = dailyCurrent / dailyTotal * 100;
         Console.WriteLine();
-        Console.Write("  " + $"Today's progress: {dailyCurrent}/{dailyTotal} ({dailyPercent}%)");
+        Console.Write("  " + string.Format(ApplicationTexts.GOAL_INFO_CURRENTGOAL_DAILYPROGRESS, dailyCurrent, dailyTotal, dailyPercent));
         if (dailyCurrent >= dailyTotal)
         {
-            Console.WriteLine("  " + "You're good for today. Great job!");
+            Console.WriteLine("  " + ApplicationTexts.GOAL_PRAISE_SUCCESSTODAY);
         }
         else
         {
@@ -140,7 +140,7 @@ public class ManageGoalsScreen
         UserInputValidator validator = new();
 
         var dateInput = AnsiConsole.Prompt(
-            new TextPrompt<string>("Set a date for your new goal [grey](yyyy-MM-dd)[/]: ")
+            new TextPrompt<string>(ApplicationTexts.GOAL_PROMPT_NEWDATE)
             .Validate(validator.ValidateFutureDateOrReturn));
 
         if (dateInput.ToLower().Equals("return"))
@@ -149,7 +149,7 @@ public class ManageGoalsScreen
         }
 
         var valueInput = AnsiConsole.Prompt(
-            new TextPrompt<string>("Set an amount of hours to achieve by the chosen date: ")
+            new TextPrompt<string>(ApplicationTexts.GOAL_PROMPT_HOURS)
             .Validate(validator.ValidatePositiveIntOrReturn));
 
         if (valueInput.ToLower().Equals("return"))
@@ -171,7 +171,30 @@ public class ManageGoalsScreen
             connection.Execute(sql, new { Value = value, StartDate = today, DueDate = dueDate });
         }
 
-        Console.WriteLine("New coding goal defined.");
+        Console.WriteLine(ApplicationTexts.GOAL_NEWDEFINED);
         Console.ReadLine();
+    }
+
+    private uint GetTotalHoursBetweenDates(DateOnly startDate, DateOnly endDate)
+    {
+        TimeSpan total = TimeSpan.Zero;
+        DateTime filterStart = new(startDate, TimeOnly.MinValue);
+        DateTime filterEnd = new(endDate, TimeOnly.MaxValue);
+
+        using (var connection = DataService.OpenConnection())
+        {
+            List<CodingSession> sessions;
+            string sql = @"SELECT rowid, start_date, end_date FROM coding_sessions
+                            WHERE start_date >= @FilterStart AND end_date <= @FilterEnd";
+            sessions = connection.Query<CodingSession>(sql, new { FilterStart = filterStart, FilterEnd = filterEnd }).ToList();
+
+            foreach (CodingSession session in sessions)
+            {
+                total += session.GetDuration();
+            }
+        }
+        
+        uint intTotal = (uint)total.TotalHours;
+        return intTotal;
     }
 }

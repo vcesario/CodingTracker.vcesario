@@ -18,7 +18,7 @@ public static class MainApplication
 
             MainMenuOption actionChoice = AnsiConsole.Prompt(
                     new SelectionPrompt<MainMenuOption>()
-                    .Title(ApplicationTexts.MAINMENU_PROMPT)
+                    .Title(ApplicationTexts.GENERIC_PROMPT_ACTION)
                     .AddChoices(Enum.GetValues<MainMenuOption>())
                     .UseConverter(ApplicationTexts.ConvertMainMenuOption));
 
