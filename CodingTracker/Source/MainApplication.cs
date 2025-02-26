@@ -143,7 +143,7 @@ public static class MainApplication
         CodingSession session = new(startDateTime, endDateTime);
         if (!session.Validate())
         {
-            Console.WriteLine(ApplicationTexts.CODINGSESSION_INVALID);
+            Console.WriteLine(ApplicationTexts.SESSION_INVALID);
             Console.ReadLine();
             return;
         }

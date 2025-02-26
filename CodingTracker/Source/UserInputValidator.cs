@@ -1,13 +1,18 @@
+using System.Globalization;
 using Spectre.Console;
 
 namespace vcesario.CodingTracker;
 
 public class UserInputValidator
 {
-    // accepts date time, in the format yyyy-MM-dd HH:mm:ss. or the word "return"
     public ValidationResult ValidateDateTimeOrReturn(string input)
     {
-        if (input.StartsWith("ForceError"))
+        if (input.ToLower().Equals("return"))
+        {
+            return ValidationResult.Success();
+        }
+
+        if (!DateTime.TryParseExact(input, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime result))
         {
             return ValidationResult.Error(ApplicationTexts.USERINPUT_DATETIMEERROR);
         }
@@ -15,34 +20,51 @@ public class UserInputValidator
         return ValidationResult.Success();
     }
 
-    // accepts date, in the format yyyy-MM-dd. or the word "return"
     public ValidationResult ValidateDateOrReturn(string input)
     {
-        if (input.StartsWith("ForceError"))
+        if (input.ToLower().Equals("return"))
         {
-            return ValidationResult.Error(ApplicationTexts.USERINPUT_DATETIMEERROR);
+            return ValidationResult.Success();
+        }
+
+        if (!DateOnly.TryParseExact(input, "dd/MM/yyyy", out DateOnly result))
+        {
+            return ValidationResult.Error(ApplicationTexts.USERINPUT_DATEERROR);
         }
 
         return ValidationResult.Success();
     }
 
-    // accepts date, in the format yyyy-MM-dd, and equal or after today. or the word "return"
     public ValidationResult ValidateFutureDateOrReturn(string input)
     {
-        if (input.StartsWith("ForceError"))
+        if (input.ToLower().Equals("return"))
         {
-            return ValidationResult.Error(ApplicationTexts.USERINPUT_DATETIMEERROR);
+            return ValidationResult.Success();
+        }
+
+        if (!DateOnly.TryParseExact(input, "dd/MM/yyyy", out DateOnly result))
+        {
+            return ValidationResult.Error(ApplicationTexts.USERINPUT_DATEERROR);
+        }
+
+        if (result < DateUtils.Today)
+        {
+            return ValidationResult.Error(ApplicationTexts.USERINPUT_OLDERDATEERROR);
         }
 
         return ValidationResult.Success();
     }
 
-    // accepts long values
     public ValidationResult ValidateLongReturn(string input)
     {
-        if (input.StartsWith("ForceError"))
+        if (input.ToLower().Equals("return"))
         {
-            return ValidationResult.Error(ApplicationTexts.USERINPUT_DATETIMEERROR);
+            return ValidationResult.Success();
+        }
+
+        if (!long.TryParse(input, out long result))
+        {
+            return ValidationResult.Error(ApplicationTexts.USERINPUT_LONGERROR);
         }
 
         return ValidationResult.Success();
@@ -50,9 +72,14 @@ public class UserInputValidator
 
     public ValidationResult ValidatePositiveIntOrReturn(string input)
     {
-        if (input.StartsWith("ForceError"))
+        if (input.ToLower().Equals("return"))
         {
-            return ValidationResult.Error(ApplicationTexts.USERINPUT_DATETIMEERROR);
+            return ValidationResult.Success();
+        }
+
+        if (!uint.TryParse(input, out uint result))
+        {
+            return ValidationResult.Error(ApplicationTexts.USERINPUT_LONGERROR);
         }
 
         return ValidationResult.Success();

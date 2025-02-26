@@ -140,7 +140,7 @@ public class ManageGoalsScreen
         UserInputValidator validator = new();
 
         var dateInput = AnsiConsole.Prompt(
-            new TextPrompt<string>(ApplicationTexts.GOAL_PROMPT_NEWDATE)
+            new TextPrompt<string>(ApplicationTexts.GOAL_PROMPT_NEWDATE + " [grey](DD/MM/YYYY)[/]:")
             .Validate(validator.ValidateFutureDateOrReturn));
 
         if (dateInput.ToLower().Equals("return"))
@@ -193,7 +193,7 @@ public class ManageGoalsScreen
                 total += session.GetDuration();
             }
         }
-        
+
         uint intTotal = (uint)total.TotalHours;
         return intTotal;
     }
