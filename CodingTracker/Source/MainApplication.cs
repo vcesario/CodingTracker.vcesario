@@ -61,12 +61,11 @@ public static class MainApplication
         while (!keyReader.IsCompleted)
         {
             Console.Clear();
-            Console.WriteLine();
-            Console.WriteLine($"  {ApplicationTexts.TRACKSESSION_INPROGRESS}");
+            Console.WriteLine(ApplicationTexts.TRACKSESSION_INPROGRESS);
             Console.WriteLine($"\t{stopwatch.Elapsed:hh\\:mm\\:ss}");
             Console.WriteLine();
-            AnsiConsole.MarkupLine($"  [grey]{ApplicationTexts.TRACKSESSION_CONCLUDEHELPER}[/]");
-            AnsiConsole.MarkupLine($"  [grey]{ApplicationTexts.TRACKSESSION_DISCARDHELPER}[/]");
+            AnsiConsole.MarkupLine($"  [grey]({ApplicationTexts.TRACKSESSION_CONCLUDEHELPER})[/]");
+            AnsiConsole.MarkupLine($"  [grey]({ApplicationTexts.TRACKSESSION_DISCARDHELPER})[/]");
             Console.WriteLine();
             Thread.Sleep(500);
         }
@@ -88,7 +87,7 @@ public static class MainApplication
 
         DataService.InsertSession(codingSession);
 
-        Console.WriteLine($"{ApplicationTexts.SESSION_CREATED}\n  {startDateTime}\t{endDateTime}");
+        Console.WriteLine($"{ApplicationTexts.SESSION_CREATED}\n  (from [cyan]{startDateTime}[/] to [cyan]{endDateTime}[/])");
         Console.ReadLine();
 
         ConsoleKeyInfo ReadUserKey()
@@ -118,8 +117,7 @@ public static class MainApplication
 
         var startTimeInput = AnsiConsole.Prompt(
             new TextPrompt<string>(
-                ApplicationTexts.LOGSESSIONPROMPT_STARTDATETIME + $" [grey]({ApplicationTexts.USERINPUT_DATETIMEHELPER})[/]"
-                + "\n  > ")
+                ApplicationTexts.LOGSESSIONPROMPT_STARTDATETIME + $" [grey](DD/MM/YYYY hh:mm:ss)[/]:")
             .Validate(validator.ValidateDateTimeOrReturn)
         );
 
@@ -130,8 +128,7 @@ public static class MainApplication
 
         var endTimeInput = AnsiConsole.Prompt(
             new TextPrompt<string>(
-                ApplicationTexts.LOGSESSIONPROMPT_ENDDATETIME + $" [grey]({ApplicationTexts.USERINPUT_DATETIMEHELPER})[/]"
-                + "\n  > ")
+                ApplicationTexts.LOGSESSIONPROMPT_ENDDATETIME + $" [grey](DD/MM/YYYY hh:mm:ss)[/]:")
             .Validate(validator.ValidateDateTimeOrReturn)
         );
 
@@ -146,7 +143,7 @@ public static class MainApplication
         CodingSession session = new(startDateTime, endDateTime);
         if (!session.Validate())
         {
-            Console.WriteLine(ApplicationTexts.CODINGSESSION_NOTACCEPTED);
+            Console.WriteLine(ApplicationTexts.CODINGSESSION_INVALID);
             Console.ReadLine();
             return;
         }
@@ -162,12 +159,6 @@ public static class MainApplication
     private static void ViewReport()
     {
         Console.Clear();
-
-        // Your first coding session was on DD/MM/YYYY.
-        // Over the following D days, you accumulated:
-        //   N coding sessions
-        //   and a total of X hours, Y minutes and Z seconds of coding,
-        //   with an average of A hours, B minutes and C seconds of coding per session.
 
         List<CodingSession> sessions;
         DateTime filterStart = DateTime.MinValue;
@@ -193,14 +184,14 @@ public static class MainApplication
         Console.WriteLine();
 
         DateOnly firstDate = DateOnly.FromDateTime(sessions[0].Start);
-        Console.WriteLine(string.Format(ApplicationTexts.REPORT_FIRSTSESSION, firstDate.ToLongDateStringUs()));
+        AnsiConsole.MarkupLine(string.Format(ApplicationTexts.REPORT_FIRSTSESSION, "[cyan]" + firstDate.ToLongDateStringUs() + "[/]"));
         Console.ReadLine();
 
         TimeSpan dayCount = sessions[sessions.Count - 1].End - sessions[0].Start;
-        Console.Write(string.Format(ApplicationTexts.REPORT_FOLLOWINGDAYS, dayCount.Days));
+        AnsiConsole.Markup(string.Format(ApplicationTexts.REPORT_FOLLOWINGDAYS, "[teal]" + dayCount.Days + "[/]"));
         Console.ReadLine();
 
-        Console.Write("  " + string.Format(ApplicationTexts.REPORT_SESSIONCOUNT, sessions.Count));
+        AnsiConsole.Markup("  " + string.Format(ApplicationTexts.REPORT_SESSIONCOUNT, "[lime]" + sessions.Count + "[/]"));
         Console.ReadLine();
 
         TimeSpan durationTotal = TimeSpan.Zero;
@@ -241,7 +232,7 @@ public static class MainApplication
 
         Console.WriteLine();
         Console.WriteLine();
-        Console.Write($"\t{ApplicationTexts.REPORT_END}");
+        AnsiConsole.MarkupLine($"\t[red]{ApplicationTexts.REPORT_END}[/]");
         Console.ReadLine();
     }
 
@@ -272,7 +263,7 @@ public static class MainApplication
             CodingSession session = new(startDateTime, endDateTime);
             DataService.InsertSession(session);
 
-            Console.WriteLine($"  {startDateTime:yyyy-MM-dd HH:mm:ss}\t{endDateTime:yyyy-MM-dd HH:mm:ss}");
+            Console.WriteLine($"  {startDateTime:dd/MM/yyyy HH:mm:ss}\t{endDateTime:dd/MM/yyyy HH:mm:ss}");
         }
 
         Console.WriteLine();

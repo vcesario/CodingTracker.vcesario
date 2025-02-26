@@ -38,7 +38,7 @@ public class ManageSessionsScreen
             UserInputValidator validator = new();
 
             var input = AnsiConsole.Prompt(
-                new TextPrompt<string>(ApplicationTexts.MANAGESESSIONS_PROMPT_DAYRANGE)
+                new TextPrompt<string>(ApplicationTexts.MANAGESESSIONS_PROMPT_DAYRANGE + "[grey](DD/MM/YYYY)[/]:")
                 .Validate(validator.ValidateDateOrReturn));
 
             if (input.ToLower().Equals("return"))
@@ -46,7 +46,7 @@ public class ManageSessionsScreen
                 return;
             }
 
-            DateOnly date = DateOnly.ParseExact(input, "yyyy-MM-dd");
+            DateOnly date = DateOnly.ParseExact(input, "dd/MM/yyyy");
 
             if (actionChoice == ManageSessionsOption.Week)
             {
@@ -67,7 +67,7 @@ public class ManageSessionsScreen
                 filterStart = new(first, TimeOnly.MinValue);
                 filterEnd = new(last, TimeOnly.MaxValue);
             }
-            else // Year
+            else
             {
                 int year = date.Year;
 
@@ -89,9 +89,10 @@ public class ManageSessionsScreen
         Console.WriteLine();
         Console.WriteLine(string.Format(ApplicationTexts.MANAGESESSIONS_FILTERINFO, DateOnly.FromDateTime(filterStart), DateOnly.FromDateTime(filterEnd)));
 
+        List<CodingSession> sessions;
+
         using (var connection = DataService.OpenConnection())
         {
-            List<CodingSession> sessions;
             string sql;
 
             if (actionChoice == ManageSessionsOption.Asc)
@@ -107,21 +108,9 @@ public class ManageSessionsScreen
                         ORDER BY start_date DESC";
             }
             sessions = connection.Query<CodingSession>(sql, new { FilterStart = filterStart, FilterEnd = filterEnd }).ToList();
-
-            if (sessions.Count == 0)
-            {
-                Console.WriteLine();
-                Console.WriteLine(ApplicationTexts.MANAGESESSIONS_NOENTRIES);
-            }
-            else
-            {
-                Console.WriteLine();
-                foreach (var session in sessions)
-                {
-                    Console.WriteLine($"#{session.Id,-6} {session.Start}\t{session.End}");
-                }
-            }
         }
+
+        DrawSessionTable(sessions);
 
         Console.WriteLine();
         actionChoice = AnsiConsole.Prompt(
@@ -177,9 +166,7 @@ public class ManageSessionsScreen
         Console.WriteLine($"#{session.Id,-6} {session.Start}\t{session.End}");
 
         var startTimeInput = AnsiConsole.Prompt(
-            new TextPrompt<string>(
-                $"{ApplicationTexts.MANAGESESSIONS_PROMPT_EDITSTART} [grey]({ApplicationTexts.USERINPUT_DATETIMEHELPER})[/]"
-                + "\n  > ")
+            new TextPrompt<string>(ApplicationTexts.MANAGESESSIONS_PROMPT_EDITSTART + "[grey](DD/MM/YYYY hh:mm:ss)[/]:")
             .Validate(validator.ValidateDateTimeOrReturn)
         );
 
@@ -189,9 +176,7 @@ public class ManageSessionsScreen
         }
 
         var endTimeInput = AnsiConsole.Prompt(
-            new TextPrompt<string>(
-                $"{ApplicationTexts.MANAGESESSIONS_PROMPT_EDITEND} [grey]({ApplicationTexts.USERINPUT_DATETIMEHELPER})[/]"
-                + "\n  > ")
+            new TextPrompt<string>(ApplicationTexts.MANAGESESSIONS_PROMPT_EDITEND + "[grey](DD/MM/YYYY hh:mm:ss)[/]")
             .Validate(validator.ValidateDateTimeOrReturn)
         );
 
@@ -311,7 +296,7 @@ public class ManageSessionsScreen
         }
 
         var confirmation = AnsiConsole.Prompt(
-            new ConfirmationPrompt(string.Format(ApplicationTexts.MANAGESESSIONS_PROMPT_DELETERANGE, input, input2))
+            new ConfirmationPrompt(string.Format(ApplicationTexts.MANAGESESSIONS_PROMPT_DELETERANGE, "[red]" + input + "[/]", "[red]" + input2 + "[/]"))
             {
                 DefaultValue = false
             }
@@ -404,5 +389,38 @@ public class ManageSessionsScreen
         Console.WriteLine();
         Console.WriteLine(ApplicationTexts.SESSION_DELETED);
         Console.ReadLine();
+    }
+
+    private void DrawSessionTable(List<CodingSession> sessions)
+    {
+        Console.WriteLine();
+
+        var table = new Table();
+
+        table.AddColumn(new TableColumn("[yellow]Id[/]").RightAligned());
+        table.AddColumn(new TableColumn("[yellow]Start time[/]").Centered());
+        table.AddColumn(new TableColumn("[yellow]End time[/]").Centered());
+
+        if (sessions.Count == 0)
+        {
+            table.AddRow("---", "----------", "----------");
+        }
+        else
+        {
+            foreach (var session in sessions)
+            {
+                string startDate = "[cyan]" + DateOnly.FromDateTime(session.Start.Date) + "[/] ";
+                startDate += session.Start.TimeOfDay;
+
+                string endDate = "[cyan]" + DateOnly.FromDateTime(session.End.Date) + "[/] ";
+                endDate += session.End.TimeOfDay;
+
+                table.AddRow(session.Id.ToString(), startDate, endDate);
+            }
+        }
+
+        table.Border = TableBorder.Horizontal;
+
+        AnsiConsole.Write(table);
     }
 }

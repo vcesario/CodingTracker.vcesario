@@ -14,19 +14,19 @@ public static class ApplicationTexts
 
     public const string LOGSESSIONPROMPT_STARTDATETIME = "Enter the start date and time";
     public const string LOGSESSIONPROMPT_ENDDATETIME = "Enter the end date and time";
-    public const string CODINGSESSION_NOTACCEPTED = "This coding session is not acceptable.";
+    public const string CODINGSESSION_INVALID = "Coding session invalid.";
     public const string USERINPUT_DATETIMEHELPER = "yyyy-MM-dd hh:mm:ss";
     public const string USERINPUT_DATETIMEERROR = "Couldn't parse DateTime. Use provided template.";
     public const string SESSION_CREATED = "Coding session created.";
     public const string SESSION_DISCARDED = "Coding session discarded.";
     public const string SESSION_DELETED = "Coding session deleted.";
     public const string SESSION_UPDATED = "Coding session updated.";
-    
+
     public const string RANDOMDATA_CREATED = "Random data created.";
 
     public const string TRACKSESSION_INPROGRESS = "Coding session in progress...";
-    public const string TRACKSESSION_CONCLUDEHELPER = "(Press 'Enter' to conclude session.)";
-    public const string TRACKSESSION_DISCARDHELPER = "(Press 'Esc' to discard session.)";
+    public const string TRACKSESSION_CONCLUDEHELPER = "Press 'Enter' to conclude session.";
+    public const string TRACKSESSION_DISCARDHELPER = "Press 'Esc' to discard session.";
 
     public const string MANAGESESSIONSOPTION_ASC = "From earliest";
     public const string MANAGESESSIONSOPTION_DESC = "From latest";
@@ -54,12 +54,12 @@ public static class ApplicationTexts
     public const string MANAGESESSIONS_DELETE_LOW = "Enter the lowest ID of the range to delete:";
     public const string MANAGESESSIONS_DELETE_HIGH = "Enter the highest ID of the range to delete:";
     public const string MANAGESESSIONS_PROMPT_DELETE = "Are you sure you want to delete session #{0}?";
-    public const string MANAGESESSIONS_PROMPT_DELETERANGE = "Are you sure you want to delete all sessions between #{0} and #{1}?";
+    public const string MANAGESESSIONS_PROMPT_DELETERANGE = "Are you sure you want to delete all sessions between {0} and {1}?";
     public const string MANAGESESSIONS_PROMPT_DELETEALL = "Are you sure you want to delete all sessions?";
     public const string MANAGESESSIONS_DELETE_CANCELED = "Deletion canceled.";
     public const string CONFIRM_AGAIN = "Are you REALLY sure?";
 
-    public const string REPORT_HEADER = "Report";
+    public const string REPORT_HEADER = "View report";
     public const string REPORT_FIRSTSESSION = "Your first session was on {0}.";
     public const string REPORT_FOLLOWINGDAYS = "Over the following {0} days, you accumulated:";
     public const string REPORT_SESSIONCOUNT = "{0} coding sessions,";

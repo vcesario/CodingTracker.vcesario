@@ -16,7 +16,7 @@
         - [x] Delete option (sub: ID, ID range, all)
     - [x] ViewReport,
     - [x] ViewGoals,
-- [] Table Visualization
+- [x] Table Visualization
 - Data validation
     - [] Validate input DateTime
     - [] Validate DateTime Overlap on Insert
@@ -24,6 +24,7 @@
 - [] Recover from DB loss while application already open
 - Last cleanup
     - [] Refactor Enums + Menu Option Converters
+    - [] Refactor string formats
     - [] Remove uints
 - [] Write Readme
 
