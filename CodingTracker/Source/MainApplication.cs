@@ -1,6 +1,5 @@
 using System.Data.SQLite;
 using System.Diagnostics;
-using System.Globalization;
 using Dapper;
 using Spectre.Console;
 
