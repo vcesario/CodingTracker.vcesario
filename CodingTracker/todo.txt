@@ -18,13 +18,13 @@
     - [x] ViewGoals,
 - [x] Table Visualization
 - Data validation
-    - [] Validate input DateTime
-    - [] Validate DateTime Overlap on Insert
+    - [x] Validate input DateTime
+    - [x] Validate DateTime Overlap on Insert
 - [] Improve navigability for submenus?
 - [] Recover from DB loss while application already open
 - Last cleanup
-    - [] Refactor Enums + Menu Option Converters
-    - [] Refactor string formats
+    - [x] Refactor Enums + Menu Option Converters
+    - [x] Refactor string formats
     - [] Remove uints
 - [] Write Readme
 

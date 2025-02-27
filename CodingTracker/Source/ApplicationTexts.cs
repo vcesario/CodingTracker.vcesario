@@ -91,63 +91,10 @@ public static class ApplicationTexts
     public const string GOAL_PROMPT_NEWDATE = "Set a date for your new goal";
     public const string GOAL_PROMPT_HOURS = "Set an amount of hours to achieve by the chosen date:";
 
+    public const string DATASERVICE_OVERLAP_INFO = "This new session would overlap the following sessions:";
+    public const string DATASERVICE_OVERLAP_PROMPT = "Do you want to delete the sessions above to insert the new one?";
+
     public const string GENERIC_PROMPT_ACTION = "What do you want to do?";
     public const string GENERICMENUOPTION_RETURN = "Return";
     public const string TEXT_UNDEFINED = "Text undefined";
-
-    public static string ConvertMainMenuOption(MainMenuOption option)
-    {
-        switch (option)
-        {
-            case MainMenuOption.StartNewSession:
-                return MAINMENUOPTION_STARTNEWSESSION;
-            case MainMenuOption.LogSessionManually:
-                return MAINMENUOPTION_LOGSESSION;
-            case MainMenuOption.ManageSessions:
-                return MAINMENUOPTION_MANAGESESSIONS;
-            case MainMenuOption.ViewReport:
-                return MAINMENUOPTION_VIEWREPORT;
-            case MainMenuOption.ViewGoals:
-                return MAINMENUOPTION_VIEWGOALS;
-            case MainMenuOption.FillWithRandomData:
-                return Markup.Escape(MAINMENUOPTION_FILLWITHRANDOM);
-            case MainMenuOption.ExitApplication:
-                return MAINMENUOPTION_EXIT;
-            default:
-                return TEXT_UNDEFINED;
-        }
-    }
-
-    public static string ConvertManageSessionsOption(ManageSessionsOption option)
-    {
-        switch (option)
-        {
-            case ManageSessionsOption.Week:
-                return option.ToString();
-            case ManageSessionsOption.Month:
-                return option.ToString();
-            case ManageSessionsOption.Year:
-                return option.ToString();
-            case ManageSessionsOption.All:
-                return option.ToString();
-            case ManageSessionsOption.Asc:
-                return MANAGESESSIONSOPTION_ASC;
-            case ManageSessionsOption.Desc:
-                return MANAGESESSIONSOPTION_DESC;
-            case ManageSessionsOption.EditSession:
-                return MANAGESESSIONSOPTION_EDITSESSION;
-            case ManageSessionsOption.DeleteSessions:
-                return MANAGESESSIONSOPTION_DELETESESSIONS;
-            case ManageSessionsOption.DeleteId:
-                return MANAGESESSIONSOPTION_DELETEID;
-            case ManageSessionsOption.DeleteIdRange:
-                return MANAGESESSIONSOPTION_DELETEIDRANGE;
-            case ManageSessionsOption.DeleteAll:
-                return MANAGESESSIONSOPTION_DELETEALL;
-            case ManageSessionsOption.Return:
-                return option.ToString();
-            default:
-                return TEXT_UNDEFINED;
-        }
-    }
 }

@@ -26,8 +26,19 @@ public class CodingSession
 
     public bool Validate()
     {
+        TimeSpan span = End - Start;
+        
         // end should be greater than start, at least 1 second long
+        if (End < Start || span.TotalSeconds < 1)
+        {
+            return false;
+        }
+
         // end should be now or less
+        if (End > DateTime.Now)
+        {
+            return false;
+        }
 
         return true;
     }

@@ -5,6 +5,26 @@ namespace vcesario.CodingTracker;
 
 public class ManageSessionsScreen
 {
+    public enum ManageSessionsOption
+    {
+        Week,
+        Month,
+        Year,
+        All,
+
+        Asc,
+        Desc,
+
+        EditSession,
+        DeleteSessions,
+
+        DeleteId,
+        DeleteIdRange,
+        DeleteAll,
+
+        Return,
+    }
+
     public void Open()
     {
         Console.Clear();
@@ -16,7 +36,7 @@ public class ManageSessionsScreen
                     new SelectionPrompt<ManageSessionsOption>()
                     .Title(ApplicationTexts.MANAGESESSIONS_PROMPT_RESULTRANGE)
                     .AddChoices([ManageSessionsOption.Week, ManageSessionsOption.Month, ManageSessionsOption.Year, ManageSessionsOption.All, ManageSessionsOption.Return])
-                    .UseConverter(ApplicationTexts.ConvertManageSessionsOption));
+                    .UseConverter(ConvertManageSessionsOption));
 
         if (actionChoice == ManageSessionsOption.Return)
         {
@@ -83,7 +103,7 @@ public class ManageSessionsScreen
                     new SelectionPrompt<ManageSessionsOption>()
                     .Title(ApplicationTexts.MANAGESESSIONS_PROMPT_ORDERING)
                     .AddChoices([ManageSessionsOption.Asc, ManageSessionsOption.Desc])
-                    .UseConverter(ApplicationTexts.ConvertManageSessionsOption));
+                    .UseConverter(ConvertManageSessionsOption));
         Console.WriteLine($"{ApplicationTexts.MANAGESESSIONS_PROMPT_ORDERING_LOG} {actionChoice}");
 
         Console.WriteLine();
@@ -110,13 +130,14 @@ public class ManageSessionsScreen
             sessions = connection.Query<CodingSession>(sql, new { FilterStart = filterStart, FilterEnd = filterEnd }).ToList();
         }
 
-        DrawSessionTable(sessions);
+        DateUtils.DrawSessionTable(sessions);
 
         Console.WriteLine();
         actionChoice = AnsiConsole.Prompt(
             new SelectionPrompt<ManageSessionsOption>()
+            .Title(ApplicationTexts.GENERIC_PROMPT_ACTION)
             .AddChoices([ManageSessionsOption.EditSession, ManageSessionsOption.DeleteSessions, ManageSessionsOption.Return])
-            .UseConverter(ApplicationTexts.ConvertManageSessionsOption)
+            .UseConverter(ConvertManageSessionsOption)
         );
 
         switch (actionChoice)
@@ -162,8 +183,8 @@ public class ManageSessionsScreen
 
         Console.Clear();
         Console.WriteLine(ApplicationTexts.MANAGESESSIONS_EDIT_HEADER);
+        DateUtils.DrawSessionTable(new() { session });
         Console.WriteLine();
-        Console.WriteLine($"#{session.Id,-6} {session.Start}\t{session.End}");
 
         var startTimeInput = AnsiConsole.Prompt(
             new TextPrompt<string>(ApplicationTexts.MANAGESESSIONS_PROMPT_EDITSTART + "[grey](DD/MM/YYYY hh:mm:ss)[/]:")
@@ -188,8 +209,13 @@ public class ManageSessionsScreen
         DateTime startDateTime = DateTime.Parse(startTimeInput);
         DateTime endDateTime = DateTime.Parse(endTimeInput);
 
-        // check session overlap
-        // ...
+        CodingSession dummySession = new(session.Id, startDateTime, endDateTime);
+        if (!DataService.PromptSessionOverlap(dummySession))
+        {
+            Console.WriteLine(ApplicationTexts.SESSION_DISCARDED);
+            Console.ReadLine();
+            return;
+        }
 
         using (var connection = DataService.OpenConnection())
         {
@@ -209,7 +235,7 @@ public class ManageSessionsScreen
         var actionChoice = AnsiConsole.Prompt(
             new SelectionPrompt<ManageSessionsOption>()
             .AddChoices([ManageSessionsOption.DeleteId, ManageSessionsOption.DeleteIdRange, ManageSessionsOption.DeleteAll, ManageSessionsOption.Return])
-            .UseConverter(ApplicationTexts.ConvertManageSessionsOption)
+            .UseConverter(ConvertManageSessionsOption)
         );
 
         switch (actionChoice)
@@ -391,36 +417,36 @@ public class ManageSessionsScreen
         Console.ReadLine();
     }
 
-    private void DrawSessionTable(List<CodingSession> sessions)
+    public static string ConvertManageSessionsOption(ManageSessionsOption option)
     {
-        Console.WriteLine();
-
-        var table = new Table();
-
-        table.AddColumn(new TableColumn("[yellow]Id[/]").RightAligned());
-        table.AddColumn(new TableColumn("[yellow]Start time[/]").Centered());
-        table.AddColumn(new TableColumn("[yellow]End time[/]").Centered());
-
-        if (sessions.Count == 0)
+        switch (option)
         {
-            table.AddRow("---", "----------", "----------");
+            case ManageSessionsOption.Week:
+                return option.ToString();
+            case ManageSessionsOption.Month:
+                return option.ToString();
+            case ManageSessionsOption.Year:
+                return option.ToString();
+            case ManageSessionsOption.All:
+                return option.ToString();
+            case ManageSessionsOption.Asc:
+                return ApplicationTexts.MANAGESESSIONSOPTION_ASC;
+            case ManageSessionsOption.Desc:
+                return ApplicationTexts.MANAGESESSIONSOPTION_DESC;
+            case ManageSessionsOption.EditSession:
+                return ApplicationTexts.MANAGESESSIONSOPTION_EDITSESSION;
+            case ManageSessionsOption.DeleteSessions:
+                return ApplicationTexts.MANAGESESSIONSOPTION_DELETESESSIONS;
+            case ManageSessionsOption.DeleteId:
+                return ApplicationTexts.MANAGESESSIONSOPTION_DELETEID;
+            case ManageSessionsOption.DeleteIdRange:
+                return ApplicationTexts.MANAGESESSIONSOPTION_DELETEIDRANGE;
+            case ManageSessionsOption.DeleteAll:
+                return ApplicationTexts.MANAGESESSIONSOPTION_DELETEALL;
+            case ManageSessionsOption.Return:
+                return ApplicationTexts.GENERICMENUOPTION_RETURN;
+            default:
+                return ApplicationTexts.TEXT_UNDEFINED;
         }
-        else
-        {
-            foreach (var session in sessions)
-            {
-                string startDate = "[cyan]" + DateOnly.FromDateTime(session.Start.Date) + "[/] ";
-                startDate += session.Start.TimeOfDay;
-
-                string endDate = "[cyan]" + DateOnly.FromDateTime(session.End.Date) + "[/] ";
-                endDate += session.End.TimeOfDay;
-
-                table.AddRow(session.Id.ToString(), startDate, endDate);
-            }
-        }
-
-        table.Border = TableBorder.Horizontal;
-
-        AnsiConsole.Write(table);
     }
 }

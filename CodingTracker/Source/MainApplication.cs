@@ -7,6 +7,17 @@ namespace vcesario.CodingTracker;
 
 public static class MainApplication
 {
+    public enum MainMenuOption
+    {
+        StartNewSession,
+        LogSessionManually,
+        ManageSessions,
+        ViewReport,
+        ViewGoals,
+        FillWithRandomData,
+        ExitApplication
+    }
+
     public static void Run()
     {
         DataService.Initialize();
@@ -20,7 +31,7 @@ public static class MainApplication
                     new SelectionPrompt<MainMenuOption>()
                     .Title(ApplicationTexts.GENERIC_PROMPT_ACTION)
                     .AddChoices(Enum.GetValues<MainMenuOption>())
-                    .UseConverter(ApplicationTexts.ConvertMainMenuOption));
+                    .UseConverter(ConvertMainMenuOption));
 
             switch (actionChoice)
             {
@@ -50,6 +61,29 @@ public static class MainApplication
         while (!choseExitApp);
     }
 
+    private static string ConvertMainMenuOption(MainMenuOption option)
+    {
+        switch (option)
+        {
+            case MainMenuOption.StartNewSession:
+                return ApplicationTexts.MAINMENUOPTION_STARTNEWSESSION;
+            case MainMenuOption.LogSessionManually:
+                return ApplicationTexts.MAINMENUOPTION_LOGSESSION;
+            case MainMenuOption.ManageSessions:
+                return ApplicationTexts.MAINMENUOPTION_MANAGESESSIONS;
+            case MainMenuOption.ViewReport:
+                return ApplicationTexts.MAINMENUOPTION_VIEWREPORT;
+            case MainMenuOption.ViewGoals:
+                return ApplicationTexts.MAINMENUOPTION_VIEWGOALS;
+            case MainMenuOption.FillWithRandomData:
+                return Markup.Escape(ApplicationTexts.MAINMENUOPTION_FILLWITHRANDOM);
+            case MainMenuOption.ExitApplication:
+                return ApplicationTexts.MAINMENUOPTION_EXIT;
+            default:
+                return ApplicationTexts.TEXT_UNDEFINED;
+        }
+    }
+
     private static void TrackSession()
     {
         Stopwatch stopwatch = new();
@@ -66,7 +100,6 @@ public static class MainApplication
             Console.WriteLine();
             AnsiConsole.MarkupLine($"  [grey]({ApplicationTexts.TRACKSESSION_CONCLUDEHELPER})[/]");
             AnsiConsole.MarkupLine($"  [grey]({ApplicationTexts.TRACKSESSION_DISCARDHELPER})[/]");
-            Console.WriteLine();
             Thread.Sleep(500);
         }
 
@@ -82,12 +115,24 @@ public static class MainApplication
         DateTime endDateTime = DateTime.Now;
         CodingSession codingSession = new(startDateTime, endDateTime);
 
-        // check if session overlaps
-        // ...
+        if (!codingSession.Validate())
+        {
+            Console.WriteLine(ApplicationTexts.SESSION_DISCARDED);
+            Console.ReadLine();
+            return;
+        }
+
+        if (!DataService.PromptSessionOverlap(codingSession))
+        {
+            Console.WriteLine(ApplicationTexts.SESSION_DISCARDED);
+            Console.ReadLine();
+            return;
+        }
 
         DataService.InsertSession(codingSession);
 
-        Console.WriteLine($"{ApplicationTexts.SESSION_CREATED}\n  (from [cyan]{startDateTime}[/] to [cyan]{endDateTime}[/])");
+        Console.WriteLine();
+        AnsiConsole.MarkupLine($"{ApplicationTexts.SESSION_CREATED}\n  (from [cyan]{startDateTime}[/] to [cyan]{endDateTime}[/])");
         Console.ReadLine();
 
         ConsoleKeyInfo ReadUserKey()
@@ -143,15 +188,23 @@ public static class MainApplication
         CodingSession session = new(startDateTime, endDateTime);
         if (!session.Validate())
         {
+            Console.WriteLine();
             Console.WriteLine(ApplicationTexts.SESSION_INVALID);
             Console.ReadLine();
             return;
         }
 
-        // check if session overlaps
-        // ...
+        if (!DataService.PromptSessionOverlap(session))
+        {
+            Console.WriteLine();
+            Console.WriteLine(ApplicationTexts.SESSION_DISCARDED);
+            Console.ReadLine();
+            return;
+        }
+
         DataService.InsertSession(session);
 
+        Console.WriteLine();
         Console.WriteLine(ApplicationTexts.SESSION_CREATED);
         Console.ReadLine();
     }
