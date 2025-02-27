@@ -1,3 +1,4 @@
+using System.Data.SQLite;
 using System.Diagnostics;
 using System.Globalization;
 using Dapper;
@@ -222,7 +223,16 @@ public static class MainApplication
             string sql = @"SELECT rowid, start_date, end_date FROM coding_sessions
                         WHERE start_date >= @FilterStart AND end_date <= @FilterEnd
                         ORDER BY start_date ASC";
-            sessions = connection.Query<CodingSession>(sql, new { FilterStart = filterStart, FilterEnd = filterEnd }).ToList();
+
+            try
+            {
+                sessions = connection.Query<CodingSession>(sql, new { FilterStart = filterStart, FilterEnd = filterEnd }).ToList();
+            }
+            catch (SQLiteException)
+            {
+                DataService.PrintDbError();
+                return;
+            }
         }
 
         if (sessions.Count == 0)

@@ -45,13 +45,20 @@ public static class DataService
                 EndDateTime = session.End.ToString("yyyy-MM-dd HH:mm:ss")
             };
 
-            connection.Execute(sql, anonymousSession);
+            try
+            {
+                connection.Execute(sql, anonymousSession);
+            }
+            catch (SQLiteException)
+            {
+                PrintDbError();
+            }
         }
     }
 
     public static bool PromptSessionOverlap(CodingSession session)
     {
-        List<CodingSession> sessions;
+        List<CodingSession> sessions = null;
 
         using (var connection = OpenConnection())
         {
@@ -64,7 +71,15 @@ public static class DataService
                 Id = session.Id
             };
 
-            sessions = connection.Query<CodingSession>(sql, anonymousSession).ToList();
+            try
+            {
+                sessions = connection.Query<CodingSession>(sql, anonymousSession).ToList();
+            }
+            catch (SQLiteException)
+            {
+                PrintDbError();
+                return false;
+            }
         }
 
         if (sessions.Count == 0)
@@ -107,10 +122,25 @@ public static class DataService
             foreach (var existingSession in sessions)
             {
                 string sql = "DELETE FROM coding_sessions WHERE rowid=@Id";
-                connection.Execute(sql, new { Id = existingSession.Id });
+
+                try
+                {
+                    connection.Execute(sql, new { Id = existingSession.Id });
+                }
+                catch (SQLiteException)
+                {
+                    PrintDbError();
+                    return false;
+                }
             }
         }
 
         return true;
+    }
+
+    public static void PrintDbError()
+    {
+        AnsiConsole.MarkupLine("[red]" + ApplicationTexts.GENERIC_DB_ERROR + "[/]");
+        Console.ReadLine();
     }
 }

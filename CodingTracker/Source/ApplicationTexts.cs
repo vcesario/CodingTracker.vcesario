@@ -94,6 +94,7 @@ public static class ApplicationTexts
     public const string DATASERVICE_OVERLAP_INFO = "This new session would overlap the following sessions:";
     public const string DATASERVICE_OVERLAP_PROMPT = "Do you want to delete the sessions above to insert the new one?";
 
+    public const string GENERIC_DB_ERROR = "Error when connecting to database. Try restarting the application.";
     public const string GENERIC_PROMPT_ACTION = "What do you want to do?";
     public const string GENERICMENUOPTION_RETURN = "Return";
     public const string TEXT_UNDEFINED = "Text undefined";

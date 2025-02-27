@@ -1,3 +1,4 @@
+using System.Data.SQLite;
 using Dapper;
 using Spectre.Console;
 
@@ -24,7 +25,15 @@ public class ManageGoalsScreen
             using (var connection = DataService.OpenConnection())
             {
                 string sql = "SELECT value, start_date, due_date FROM coding_goal";
-                goal = connection.QueryFirstOrDefault<CodingGoal>(sql);
+                try
+                {
+                    goal = connection.QueryFirstOrDefault<CodingGoal>(sql);
+                }
+                catch (SQLiteException)
+                {
+                    DataService.PrintDbError();
+                    return;
+                }
             }
 
             Console.WriteLine();
@@ -164,11 +173,29 @@ public class ManageGoalsScreen
         using (var connection = DataService.OpenConnection())
         {
             string sql = "DELETE FROM coding_goal";
-            connection.Execute(sql);
+
+            try
+            {
+                connection.Execute(sql);
+            }
+            catch (SQLiteException)
+            {
+                DataService.PrintDbError();
+                return;
+            }
 
             sql = @"INSERT INTO coding_goal (value, start_date, due_date)
                     VALUES (@Value, @StartDate, @DueDate)";
-            connection.Execute(sql, new { Value = value, StartDate = today, DueDate = dueDate });
+
+            try
+            {
+                connection.Execute(sql, new { Value = value, StartDate = today, DueDate = dueDate });
+            }
+            catch (SQLiteException)
+            {
+                DataService.PrintDbError();
+                return;
+            }
         }
 
         Console.WriteLine(ApplicationTexts.GOAL_NEWDEFINED);
@@ -186,7 +213,16 @@ public class ManageGoalsScreen
             List<CodingSession> sessions;
             string sql = @"SELECT rowid, start_date, end_date FROM coding_sessions
                             WHERE start_date >= @FilterStart AND end_date <= @FilterEnd";
-            sessions = connection.Query<CodingSession>(sql, new { FilterStart = filterStart, FilterEnd = filterEnd }).ToList();
+
+            try
+            {
+                sessions = connection.Query<CodingSession>(sql, new { FilterStart = filterStart, FilterEnd = filterEnd }).ToList();
+            }
+            catch (SQLiteException)
+            {
+                DataService.PrintDbError();
+                return 0;
+            }
 
             foreach (CodingSession session in sessions)
             {

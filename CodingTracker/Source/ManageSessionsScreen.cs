@@ -1,3 +1,4 @@
+using System.Data.SQLite;
 using Dapper;
 using Spectre.Console;
 
@@ -62,7 +63,16 @@ public class ManageSessionsScreen
                         WHERE start_date >= @FilterStart AND end_date <= @FilterEnd
                         ORDER BY start_date DESC";
                 }
-                sessions = connection.Query<CodingSession>(sql, new { FilterStart = filterStart, FilterEnd = filterEnd }).ToList();
+
+                try
+                {
+                    sessions = connection.Query<CodingSession>(sql, new { FilterStart = filterStart, FilterEnd = filterEnd }).ToList();
+                }
+                catch (SQLiteException)
+                {
+                    DataService.PrintDbError();
+                    return;
+                }
             }
 
             DateUtils.DrawSessionTable(sessions);
@@ -194,7 +204,16 @@ public class ManageSessionsScreen
         using (var connection = DataService.OpenConnection())
         {
             string sql = "SELECT rowid, start_date, end_date FROM coding_sessions WHERE rowid=@Id";
-            session = connection.QueryFirst<CodingSession>(sql, new { Id = id });
+
+            try
+            {
+                session = connection.QueryFirst<CodingSession>(sql, new { Id = id });
+            }
+            catch (SQLiteException)
+            {
+                DataService.PrintDbError();
+                return;
+            }
 
             if (session == null)
             {
@@ -244,7 +263,16 @@ public class ManageSessionsScreen
             string sql = @"UPDATE coding_sessions
                             SET start_date=@Start, end_date=@End
                             WHERE rowid=@Id";
-            connection.Execute(sql, new { Start = startDateTime, End = endDateTime, Id = id });
+
+            try
+            {
+                connection.Execute(sql, new { Start = startDateTime, End = endDateTime, Id = id });
+            }
+            catch (SQLiteException)
+            {
+                DataService.PrintDbError();
+                return;
+            }
         }
 
         Console.WriteLine();
@@ -311,7 +339,15 @@ public class ManageSessionsScreen
         using (var connection = DataService.OpenConnection())
         {
             string sql = "DELETE FROM coding_sessions WHERE rowid=@Id";
-            connection.Execute(sql, new { Id = id });
+            try
+            {
+                connection.Execute(sql, new { Id = id });
+            }
+            catch (SQLiteException)
+            {
+                DataService.PrintDbError();
+                return;
+            }
         }
 
         Console.WriteLine();
@@ -386,7 +422,15 @@ public class ManageSessionsScreen
         using (var connection = DataService.OpenConnection())
         {
             string sql = "DELETE FROM coding_sessions WHERE rowid>=@Id1 AND rowid<=@Id2";
-            connection.Execute(sql, new { Id1 = id, Id2 = id2 });
+            try
+            {
+                connection.Execute(sql, new { Id1 = id, Id2 = id2 });
+            }
+            catch (SQLiteException)
+            {
+                DataService.PrintDbError();
+                return;
+            }
         }
 
         Console.WriteLine();
@@ -431,7 +475,16 @@ public class ManageSessionsScreen
         using (var connection = DataService.OpenConnection())
         {
             string sql = "DELETE FROM coding_sessions";
-            connection.Execute(sql);
+
+            try
+            {
+                connection.Execute(sql);
+            }
+            catch (SQLiteException)
+            {
+                DataService.PrintDbError();
+                return;
+            }
         }
 
         Console.WriteLine();

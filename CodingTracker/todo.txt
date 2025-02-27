@@ -21,7 +21,7 @@
     - [x] Validate input DateTime
     - [x] Validate DateTime Overlap on Insert
 - [x] Improve navigability for submenus?
-- [] Recover from DB loss while application already open
+- [x] Recover from DB loss while application already open
 - Last cleanup
     - [x] Refactor Enums + Menu Option Converters
     - [x] Refactor string formats
