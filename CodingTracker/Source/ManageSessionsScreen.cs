@@ -27,10 +27,78 @@ public class ManageSessionsScreen
 
     public void Open()
     {
-        Console.Clear();
+        bool choseReturn = false;
+        do
+        {
+            Console.Clear();
 
-        Console.WriteLine(ApplicationTexts.MANAGESESSIONS_HEADER);
-        Console.WriteLine();
+            Console.WriteLine(ApplicationTexts.MANAGESESSIONS_HEADER);
+            Console.WriteLine();
+
+            if (!PromptSearchFilter(out DateTime filterStart, out DateTime filterEnd, out ManageSessionsOption order))
+            {
+                return;
+            }
+
+
+            Console.WriteLine();
+            Console.WriteLine(string.Format(ApplicationTexts.MANAGESESSIONS_FILTERINFO, DateOnly.FromDateTime(filterStart), DateOnly.FromDateTime(filterEnd)));
+
+            List<CodingSession> sessions;
+
+            using (var connection = DataService.OpenConnection())
+            {
+                string sql;
+
+                if (order == ManageSessionsOption.Asc)
+                {
+                    sql = @"SELECT rowid, start_date, end_date FROM coding_sessions
+                        WHERE start_date >= @FilterStart AND end_date <= @FilterEnd
+                        ORDER BY start_date ASC";
+                }
+                else
+                {
+                    sql = @"SELECT rowid, start_date, end_date FROM coding_sessions
+                        WHERE start_date >= @FilterStart AND end_date <= @FilterEnd
+                        ORDER BY start_date DESC";
+                }
+                sessions = connection.Query<CodingSession>(sql, new { FilterStart = filterStart, FilterEnd = filterEnd }).ToList();
+            }
+
+            DateUtils.DrawSessionTable(sessions);
+
+            Console.WriteLine();
+            var actionChoice = AnsiConsole.Prompt(
+                new SelectionPrompt<ManageSessionsOption>()
+                .Title(ApplicationTexts.GENERIC_PROMPT_ACTION)
+                .AddChoices([ManageSessionsOption.EditSession, ManageSessionsOption.DeleteSessions, ManageSessionsOption.Return])
+                .UseConverter(ConvertManageSessionsOption)
+            );
+
+            switch (actionChoice)
+            {
+                case ManageSessionsOption.EditSession:
+                    PromptEditSession();
+                    break;
+
+                case ManageSessionsOption.DeleteSessions:
+                    PromptDeleteSessions();
+                    break;
+
+                case ManageSessionsOption.Return:
+                default:
+                    choseReturn = true;
+                    break;
+            }
+        }
+        while (!choseReturn);
+    }
+
+    private bool PromptSearchFilter(out DateTime filterStart, out DateTime filterEnd, out ManageSessionsOption order)
+    {
+        filterStart = default;
+        filterEnd = default;
+        order = default;
 
         ManageSessionsOption actionChoice = AnsiConsole.Prompt(
                     new SelectionPrompt<ManageSessionsOption>()
@@ -40,13 +108,10 @@ public class ManageSessionsScreen
 
         if (actionChoice == ManageSessionsOption.Return)
         {
-            return;
+            return false;
         }
 
         Console.WriteLine($"{ApplicationTexts.MANAGESESSIONS_PROMPT_RESULTRANGE_LOG} {actionChoice}");
-
-        DateTime filterStart = default;
-        DateTime filterEnd = default;
 
         if (actionChoice == ManageSessionsOption.All)
         {
@@ -63,7 +128,7 @@ public class ManageSessionsScreen
 
             if (input.ToLower().Equals("return"))
             {
-                return;
+                return false;
             }
 
             DateOnly date = DateOnly.ParseExact(input, "dd/MM/yyyy");
@@ -99,57 +164,14 @@ public class ManageSessionsScreen
             }
         }
 
-        actionChoice = AnsiConsole.Prompt(
+        order = AnsiConsole.Prompt(
                     new SelectionPrompt<ManageSessionsOption>()
                     .Title(ApplicationTexts.MANAGESESSIONS_PROMPT_ORDERING)
                     .AddChoices([ManageSessionsOption.Asc, ManageSessionsOption.Desc])
                     .UseConverter(ConvertManageSessionsOption));
-        Console.WriteLine($"{ApplicationTexts.MANAGESESSIONS_PROMPT_ORDERING_LOG} {actionChoice}");
+        Console.WriteLine($"{ApplicationTexts.MANAGESESSIONS_PROMPT_ORDERING_LOG} {order}");
 
-        Console.WriteLine();
-        Console.WriteLine(string.Format(ApplicationTexts.MANAGESESSIONS_FILTERINFO, DateOnly.FromDateTime(filterStart), DateOnly.FromDateTime(filterEnd)));
-
-        List<CodingSession> sessions;
-
-        using (var connection = DataService.OpenConnection())
-        {
-            string sql;
-
-            if (actionChoice == ManageSessionsOption.Asc)
-            {
-                sql = @"SELECT rowid, start_date, end_date FROM coding_sessions
-                        WHERE start_date >= @FilterStart AND end_date <= @FilterEnd
-                        ORDER BY start_date ASC";
-            }
-            else
-            {
-                sql = @"SELECT rowid, start_date, end_date FROM coding_sessions
-                        WHERE start_date >= @FilterStart AND end_date <= @FilterEnd
-                        ORDER BY start_date DESC";
-            }
-            sessions = connection.Query<CodingSession>(sql, new { FilterStart = filterStart, FilterEnd = filterEnd }).ToList();
-        }
-
-        DateUtils.DrawSessionTable(sessions);
-
-        Console.WriteLine();
-        actionChoice = AnsiConsole.Prompt(
-            new SelectionPrompt<ManageSessionsOption>()
-            .Title(ApplicationTexts.GENERIC_PROMPT_ACTION)
-            .AddChoices([ManageSessionsOption.EditSession, ManageSessionsOption.DeleteSessions, ManageSessionsOption.Return])
-            .UseConverter(ConvertManageSessionsOption)
-        );
-
-        switch (actionChoice)
-        {
-            case ManageSessionsOption.EditSession:
-                PromptEditSession();
-                break;
-
-            case ManageSessionsOption.DeleteSessions:
-                PromptDeleteSessions();
-                break;
-        }
+        return true;
     }
 
     private void PromptEditSession()

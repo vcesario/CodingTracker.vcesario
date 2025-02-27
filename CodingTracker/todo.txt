@@ -20,12 +20,12 @@
 - Data validation
     - [x] Validate input DateTime
     - [x] Validate DateTime Overlap on Insert
-- [] Improve navigability for submenus?
+- [x] Improve navigability for submenus?
 - [] Recover from DB loss while application already open
 - Last cleanup
     - [x] Refactor Enums + Menu Option Converters
     - [x] Refactor string formats
-    - [] Remove uints
+    - [x] Remove uints
 - [] Write Readme
 
 ======================

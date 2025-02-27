@@ -296,7 +296,7 @@ public static class MainApplication
         Random random = new();
         DateOnly today = DateOnly.FromDateTime(DateTime.Now);
 
-        for (int i = 1; i <= 100; i++)
+        for (int i = 100; i >= 1; i--)
         {
             TimeSpan sessionDuration = TimeSpan.FromMinutes(random.Next(1, 181));
             TimeOnly timeRange = TimeOnly.MaxValue.AddMinutes(-sessionDuration.TotalMinutes);
@@ -310,13 +310,13 @@ public static class MainApplication
             DateTime startDateTime = new(day, randomStartTime);
             DateTime endDateTime = new(day, randomStartTime.AddMinutes(sessionDuration.TotalMinutes));
 
-            // check if session overlaps
-            // ...
-
             CodingSession session = new(startDateTime, endDateTime);
-            DataService.InsertSession(session);
 
-            Console.WriteLine($"  {startDateTime:dd/MM/yyyy HH:mm:ss}\t{endDateTime:dd/MM/yyyy HH:mm:ss}");
+            if (DataService.PromptSessionOverlap(session))
+            {
+                DataService.InsertSession(session);
+                Console.WriteLine($"  {startDateTime:dd/MM/yyyy HH:mm:ss}\t{endDateTime:dd/MM/yyyy HH:mm:ss}");
+            }
         }
 
         Console.WriteLine();

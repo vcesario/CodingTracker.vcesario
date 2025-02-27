@@ -78,7 +78,7 @@ public class ManageGoalsScreen
     {
         Console.WriteLine(string.Format(ApplicationTexts.GOAL_INFO_PASTGOAL, goal.Value, goal.StartDate.ToLongDateStringUs(), goal.DueDate.ToLongDateStringUs()));
 
-        uint current = GetTotalHoursBetweenDates(goal.StartDate, goal.DueDate);
+        int current = GetTotalHoursBetweenDates(goal.StartDate, goal.DueDate);
         float percent = (float)current / goal.Value * 100;
         Console.WriteLine();
         Console.Write("  " + string.Format(ApplicationTexts.GOAL_INFO_TOTALPROGRESS, current, goal.Value, percent));
@@ -98,7 +98,7 @@ public class ManageGoalsScreen
     {
         Console.WriteLine(string.Format(ApplicationTexts.GOAL_INFO_CURRENTGOAL, goal.Value, goal.DueDate.ToLongDateStringUs()));
 
-        uint current = GetTotalHoursBetweenDates(goal.StartDate, goal.DueDate);
+        int current = GetTotalHoursBetweenDates(goal.StartDate, goal.DueDate);
         float percent = (float)current / goal.Value * 100;
         Console.WriteLine();
         Console.Write("  " + string.Format(ApplicationTexts.GOAL_INFO_TOTALPROGRESS, current, goal.Value, percent));
@@ -116,12 +116,12 @@ public class ManageGoalsScreen
         Console.WriteLine(ApplicationTexts.GOAL_INFO_CURRENTGOAL_ATLEAST);
 
         int remainingDays = goal.DueDate.DaysBetween(DateUtils.Today) + 1;
-        uint totalBeforeToday = GetTotalHoursBetweenDates(goal.StartDate, DateUtils.Today.AddDays(-1));
-        uint remainingHours = goal.Value - totalBeforeToday;
+        int totalBeforeToday = GetTotalHoursBetweenDates(goal.StartDate, DateUtils.Today.AddDays(-1));
+        int remainingHours = goal.Value - totalBeforeToday;
         float dailyTotal = (float)remainingHours / remainingDays;
         Console.WriteLine("  " + string.Format(ApplicationTexts.GOAL_INFO_CURRENTGOAL_DAILYTOTAL, dailyTotal));
 
-        uint dailyCurrent = GetTotalHoursBetweenDates(DateUtils.Today, DateUtils.Today);
+        int dailyCurrent = GetTotalHoursBetweenDates(DateUtils.Today, DateUtils.Today);
         float dailyPercent = dailyCurrent / dailyTotal * 100;
         Console.WriteLine();
         Console.Write("  " + string.Format(ApplicationTexts.GOAL_INFO_CURRENTGOAL_DAILYPROGRESS, dailyCurrent, dailyTotal, dailyPercent));
@@ -175,7 +175,7 @@ public class ManageGoalsScreen
         Console.ReadLine();
     }
 
-    private uint GetTotalHoursBetweenDates(DateOnly startDate, DateOnly endDate)
+    private int GetTotalHoursBetweenDates(DateOnly startDate, DateOnly endDate)
     {
         TimeSpan total = TimeSpan.Zero;
         DateTime filterStart = new(startDate, TimeOnly.MinValue);
@@ -194,7 +194,7 @@ public class ManageGoalsScreen
             }
         }
 
-        uint intTotal = (uint)total.TotalHours;
+        int intTotal = (int)total.TotalHours;
         return intTotal;
     }
 }
