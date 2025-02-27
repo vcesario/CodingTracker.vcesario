@@ -1,5 +1,3 @@
-using Spectre.Console;
-
 namespace vcesario.CodingTracker;
 
 public static class ApplicationTexts

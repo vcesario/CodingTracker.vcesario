@@ -2,7 +2,8 @@ using System.Configuration;
 using System.Data.SQLite;
 using Dapper;
 using Spectre.Console;
-using vcesario.CodingTracker;
+
+namespace vcesario.CodingTracker;
 
 public static class DataService
 {
